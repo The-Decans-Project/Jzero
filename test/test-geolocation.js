@@ -1,4 +1,4 @@
-import { MAJOR_CITIES, searchCities, findClosestCity, calculateDistance } from '../astrology/utilities/geolocation.js';
+import { MAJOR_CITIES, searchCities, findClosestCity, calculateDistance } from './astrology/utilities/geolocation.js';
 
 console.log('Testing Jzero Geolocation Module...');
 console.log('=====================================');
@@ -27,4 +27,5 @@ if (closest) {
   console.log(`Closest city to NYC coordinates: ${closest.name}`);
 }
 
-console.log('All tests completed successfully! ✅');
+console.log('All tests completed successfully! ✅');</content>
+<parameter name="filePath">/workspaces/Jzero/test-geolocation.js

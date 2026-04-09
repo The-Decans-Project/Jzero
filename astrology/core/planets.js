@@ -1,12 +1,101 @@
 /**
  * Planetary Data and Calculations
- * VSOP87 orbital elements and simplified planetary position calculations
- * Open Source Astrology Calculator
+ * Uses Swiss Ephemeris for accurate PROFESSIONAL-GRADE calculations
+ * Fallback to VSOP87 orbital elements for reference
+ * 
+ * @module astrology/core/planets
+ */
+
+import { getPlanetPosition as getSwissPosition, getAllPlanetPositions as getAllSwissPositions } from './swiss-ephemeris.js';
+
+/**
+ * PRIMARY CALCULATION INTERFACE
+ * All calculations now use Swiss Ephemeris for professional accuracy
  */
 
 /**
- * Planetary orbital constants (J2000.0 epoch)
- * VSOP87 mean orbital elements
+ * Calculate planetary position (Swiss Ephemeris - PROFESSIONAL GRADE)
+ * 
+ * This is the primary function. Uses Swiss Ephemeris for ±0.0001° accuracy.
+ * 
+ * @param {string} planet - Planet name ('Sun', 'Moon', 'Mercury', 'Venus', 'Mars', etc.)
+ * @param {number} jd - Julian Day (Terrestrial Time)
+ * @param {Object} options - Optional configuration
+ * @param {boolean} options.speed - Include proper motion speed (default: true)
+ * 
+ * @returns {Object} Planetary position
+ *   @returns {number} longitude - Ecliptic longitude (0-360°)
+ *   @returns {number} latitude - Ecliptic latitude
+ *   @returns {number} distance - Distance in AU
+ *   @returns {number} speed - Longitude speed (deg/day) if requested
+ *   @returns {string} source - Data source ('Swiss Ephemeris')
+ *   @returns {number} accuracy - Typical accuracy in degrees
+ * 
+ * @example
+ * const sunPos = calculatePlanetPosition('Sun', 2451545.0);
+ * console.log(`Sun at ${sunPos.longitude.toFixed(2)}° with ${sunPos.accuracy}° accuracy`);
+ */
+export function calculatePlanetPosition(planet, jd, options = {}) {
+  try {
+    return getSwissPosition(planet, jd, { 
+      speed: options.speed !== false,
+      apparent: true
+    });
+  } catch (error) {
+    console.error(`Planet calculation error for ${planet}:`, error.message);
+    throw error;
+  }
+}
+
+/**
+ * Get all planet positions at once (optimized)
+ * 
+ * More efficient than calling calculatePlanetPosition for each planet.
+ * 
+ * @param {number} jd - Julian Day (TT)
+ * @returns {Object} Object with all planet positions
+ * 
+ * @example
+ * const allPlanets = calculateAllPlanets(jdData.jd_tt);
+ * Object.entries(allPlanets).forEach(([planet, pos]) => {
+ *   console.log(`${planet}: ${pos.longitude.toFixed(2)}°`);
+ * });
+ */
+export function calculateAllPlanets(jd) {
+  return getAllSwissPositions(jd);
+}
+
+/**
+ * Calculate inner planets wrapper (compatibility)
+ * 
+ * Wraps Swiss Ephemeris for backward compatibility with older code.
+ * Inner planets: Mercury, Venus, Mars
+ * 
+ * @param {string} planet - 'Mercury', 'Venus', or 'Mars'
+ * @param {number} jd - Julian Day
+ * @returns {Object} Position object
+ */
+export function calculateInnerPlanet(planet, jd) {
+  if (!['Mercury', 'Venus', 'Mars'].includes(planet)) {
+    throw new Error(`Invalid inner planet: ${planet}. Use Mercury, Venus, or Mars.`);
+  }
+  return calculatePlanetPosition(planet, jd);
+}
+
+/**
+ * Calculate Moon position (Swiss Ephemeris)
+ * 
+ * @param {number} jd - Julian Day (TT)
+ * @returns {Object} Moon position with longitude, latitude, distance
+ */
+export function calculateMoonPosition(jd) {
+  return calculatePlanetPosition('Moon', jd);
+}
+
+/**
+ * REFERENCE DATA: Planetary orbital constants (J2000.0 epoch)
+ * VSOP87 mean orbital elements - kept for reference/educational purposes
+ * For actual calculations, Swiss Ephemeris is used (see above functions)
  */
 export const PLANETARY_CONSTANTS = {
   Mercury: {
@@ -201,63 +290,6 @@ export function longitudeToZodiac(longitude) {
     element: ZODIAC_SIGNS[signIndex].element,
     ruler: ZODIAC_SIGNS[signIndex].ruler
   };
-}
-
-/**
- * Calculate planet position using simplified VSOP87 method
- * This is intentionally simplified for learning/demonstration
- * Production code should use full JPL ephemeris or full VSOP87 coefficients
- * @param {string} planet - Planet name
- * @param {number} jd - Julian Day Number
- * @returns {Object} Planet position with longitude, latitude, distance
- */
-export function calculatePlanetPosition(planet, jd) {
-  const constants = PLANETARY_CONSTANTS[planet];
-  if (!constants) {
-    return null;
-  }
-
-  // Simplified calculation: use mean orbital elements with basic motion
-  const t = (jd - 2451545.0) / 36525; // Centuries from J2000.0
-  const meanMotion = constants.meanMotion;
-  const meanAnomaly = (constants.meanAnomaly + meanMotion * t * 36525) % 360;
-
-  // Simplified elliptic orbit calculation (more accurate uses Kepler's equation)
-  const e = constants.eccentricity;
-  const a = constants.semimajorAxis;
-  
-  // Approximate true anomaly using simple formula
-  const trueAnomaly = meanAnomaly + 2 * e * Math.sin(meanAnomaly * Math.PI / 180) * (180 / Math.PI);
-  
-  // Orbital longitude
-  const argumentOfPerihelion = (constants.argumentOfPerihelion + 0.1 * t) % 360;
-  const longitude = (argumentOfPerihelion + trueAnomaly) % 360;
-  
-  // Distance (simplified)
-  const distance = a * (1 - e * e) / (1 + e * Math.cos((trueAnomaly * Math.PI / 180)));
-  
-  return {
-    planet: planet,
-    longitude: longitude,
-    latitude: 0, // Simplified - ignores orbital inclination
-    distance: distance,
-    zodiac: longitudeToZodiac(longitude)
-  };
-}
-
-/**
- * Calculate all planet positions for a given JD
- * @param {number} jd - Julian Day Number
- * @returns {Object} All planetary positions keyed by planet name
- */
-export function calculateAllPlanets(jd) {
-  const positions = {};
-  
-  Object.keys(PLANETARY_CONSTANTS).forEach(planet => {
-    positions[planet] = calculatePlanetPosition(planet, jd);
-  });
-  
-  return positions;
 }
 
 /**

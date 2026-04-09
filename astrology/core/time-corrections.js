@@ -247,29 +247,6 @@ export function calculateMoonParallax(distanceAU) {
   return Math.atan2(6371, moonDistanceKm) * (180 / Math.PI); // Earth radius ~6371 km
 }
 
-/**
- * Convert JD to date (helper function)
- * @param {number} jd - Julian Day Number
- * @returns {Date} Date object
- */
-function dateToJulianDay(date) {
-  const year = date.getUTCFullYear();
-  const month = date.getUTCMonth() + 1; // JavaScript months are 0-based
-  const day = date.getUTCDate();
-  const hour = date.getUTCHours();
-  const minute = date.getUTCMinutes();
-  const second = date.getUTCSeconds();
-
-  let a = Math.floor((14 - month) / 12);
-  const y = year + 4800 - a;
-  const m = month + 12 * a - 3;
-
-  const jdn = day + Math.floor((153 * m + 2) / 5) + 365 * y + Math.floor(y / 4) - Math.floor(y / 100) + Math.floor(y / 400) - 32045;
-  const jd = jdn + (hour - 12) / 24 + minute / 1440 + second / 86400;
-
-  return jd;
-}
-
 export default {
   calculateDeltaT,
   utcToTT,

@@ -1,5 +1,5 @@
 // Test Julian Day calculation for March 1, 1994 at 14:28 EST
-import { dateToJulianDayTT } from '../astrology/core/julianDay.js';
+import { dateToJulianDayTT } from './astrology/core/julianDay.js';
 
 console.log('Testing Julian Day calculation for March 1, 1994 at 14:28 EST');
 console.log('=' .repeat(60));

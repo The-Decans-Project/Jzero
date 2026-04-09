@@ -9,57 +9,132 @@ import { dateToJulianDay, dateToJulianDayTT, calculateLST, normalizeAngle } from
 import { getEphemerisPosition, getAllEphemerisPositions } from './ephemeris.js';
 import { longitudeToZodiac } from './planets.js';
 import { calculateHouses, getPlanetHouse } from '../calculations/houses.js';
+import { calculateBirthChartCSV } from './csv-calculator.js';
 
 /**
  * Calculate complete birth chart for given date, time, and location
+ * Attempts Swiss Ephemeris first, falls back to CSV calibration if unavailable
+ * 
  * @param {Object} params - Calculation parameters
- * @param {Date} params.date - Birth date/time (UTC)
+ * @param {Date|number} params.date - Birth date/time (UTC as Date object or year as number)
+ * @param {number} params.year - Birth year (if not using date object)
+ * @param {number} params.month - Birth month (1-12)
+ * @param {number} params.day - Birth day (1-31)
+ * @param {number} params.hour - Birth hour (0-23, in local time or UTC)
+ * @param {number} params.minute - Birth minute (0-59)
+ * @param {number} params.timezone - Timezone offset in hours (e.g., -5 for EST)
  * @param {number} params.latitude - Birth latitude in degrees
  * @param {number} params.longitude - Birth longitude in degrees (east positive)
  * @param {string} params.houseSystem - House system to use (default: 'porphyry')
+ * @param {boolean} params.csvOnly - Force CSV calculation (for testing/demo)
  * @returns {Object} Complete birth chart with all calculations
  */
 export function calculateBirthChart(params) {
   const {
-    date,
-    latitude,
-    longitude,
+    csvOnly = false,
     houseSystem = 'porphyry'
   } = params;
 
-  const jd = dateToJulianDay(date);
-  const jdTT = dateToJulianDayTT(date);
-  const lst = calculateLST(jd, longitude);
+  let date;
+  
+  // Support both Date object and individual date/time components
+  if (params.date instanceof Date) {
+    date = params.date;
+  } else if (params.year !== undefined) {
+    const { year, month, day, hour = 0, minute = 0, timezone = 0 } = params;
+    // Convert local time to UTC
+    const utcHour = (hour - timezone + 24) % 24;
+    date = new Date(Date.UTC(year, month - 1, day, utcHour, minute, 0));
+  } else {
+    throw new Error('Must provide either date object or year/month/day parameters');
+  }
 
-  // Get all planetary positions
-  const planets = getAllEphemerisPositions(jdTT);
+  // If CSV-only mode or Swiss isn't available, use CSV calculator
+  if (csvOnly) {
+    const csvResult = calculateBirthChartCSV({
+      year: params.year || date.getUTCFullYear(),
+      month: params.month || (date.getUTCMonth() + 1),
+      day: params.day || date.getUTCDate(),
+      hour: params.hour || date.getUTCHours(),
+      minute: params.minute || date.getUTCMinutes(),
+      timezone: params.timezone || 0,
+      latitude: params.latitude || 0,
+      longitude: params.longitude || 0
+    });
+    
+    return {
+      mode: 'CSV_CALIBRATION',
+      date: date,
+      ...csvResult,
+      notice: 'LIMITED DEMONSTRATION - Zodiac signs verified, degrees interpolated from ingress data',
+      recommendation: 'For professional use: Install Swiss Ephemeris and recalculate'
+    };
+  }
 
-  // Calculate houses
-  const houses = calculateHouses(jdTT, latitude, longitude, houseSystem);
+  try {
+    // Try Swiss Ephemeris calculation
+    const latitude = params.latitude || 0;
+    const longitude = params.longitude || 0;
+    
+    const jd = dateToJulianDay(date);
+    const jdTT = dateToJulianDayTT(date);
+    const lst = calculateLST(jd, longitude);
 
-  // Assign planets to houses
-  Object.keys(planets).forEach(planet => {
-    if (planets[planet]) {
-      planets[planet].house = getPlanetHouse(planets[planet].longitude, houses.houses);
-    }
-  });
+    // Get all planetary positions
+    const planets = getAllEphemerisPositions(jdTT);
 
-  // Calculate aspects
-  const aspects = calculateAspects(planets);
+    // Calculate houses
+    const houses = calculateHouses(jdTT, latitude, longitude, houseSystem);
 
-  return {
-    date: date,
-    jd: jd,
-    jdTT: jdTT,
-    latitude: latitude,
-    longitude: longitude,
-    lst: lst,
-    houseSystem: houseSystem,
-    planets: planets,
-    houses: houses,
-    aspects: aspects,
-    interpretation: generateInterpretation(planets, houses, aspects)
-  };
+    // Assign planets to houses
+    Object.keys(planets).forEach(planet => {
+      if (planets[planet]) {
+        planets[planet].house = getPlanetHouse(planets[planet].longitude, houses.houses);
+      }
+    });
+
+    // Calculate aspects
+    const aspects = calculateAspects(planets);
+
+    return {
+      mode: 'SWISS_EPHEMERIS',
+      date: date,
+      jd: jd,
+      jdTT: jdTT,
+      latitude: latitude,
+      longitude: longitude,
+      lst: lst,
+      houseSystem: houseSystem,
+      planets: planets,
+      houses: houses,
+      aspects: aspects,
+      accuracy: 'High precision (±0.0001°)',
+      interpretation: generateInterpretation(planets, houses, aspects)
+    };
+  } catch (error) {
+    // Fallback to CSV calculation
+    console.warn(`Swiss Ephemeris unavailable (${error.message}), falling back to CSV calibration`);
+    
+    const csvResult = calculateBirthChartCSV({
+      year: params.year || date.getUTCFullYear(),
+      month: params.month || (date.getUTCMonth() + 1),
+      day: params.day || date.getUTCDate(),
+      hour: params.hour || date.getUTCHours(),
+      minute: params.minute || date.getUTCMinutes(),
+      timezone: params.timezone || 0,
+      latitude: params.latitude || 0,
+      longitude: params.longitude || 0
+    });
+    
+    return {
+      mode: 'CSV_FALLBACK',
+      date: date,
+      ...csvResult,
+      notice: 'LIMITED DEMONSTRATION (fallback)',
+      warning: 'Swiss Ephemeris not available - using interpolated ingress data',
+      recommendation: 'For professional accuracy: Install Swiss Ephemeris'
+    };
+  }
 }
 
 /**

@@ -1,5 +1,5 @@
 // Quick test of the enhanced inner-planets-calculator.js
-import { calculateInnerPlanet, calculatePlanetDistance, isPlanetRetrograde, calculatePlanetSpeed, getPlanetPhase } from '../astrology/index.js';
+import { calculateInnerPlanet, calculatePlanetDistance, isPlanetRetrograde, calculatePlanetSpeed, getPlanetPhase } from './astrology/index.js';
 
 // Test date: January 1, 2024
 const testJD = 2460311.5; // Approximate JD for 2024-01-01

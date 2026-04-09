@@ -272,19 +272,6 @@ function getZodiacSign(longitude) {
   return signs[signIndex];
 }
 
-/**
- * Normalize angle to 0-360
- * @param {number} angle - Angle in degrees
- * @returns {number} Normalized angle
- */
-function normalizeAngle(angle) {
-  let normalized = angle % 360;
-  if (normalized < 0) {
-    normalized += 360;
-  }
-  return normalized;
-}
-
 export default {
   initializeEphemeris,
   getEphemerisPosition,
