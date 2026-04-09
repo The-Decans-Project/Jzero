@@ -241,12 +241,12 @@ for (let i = 0; i < 10; i++) {
 const positions = getAllPlanetPositions(jd);
 ```
 
-## Migration from VSOP87
+## Current System
 
-If you were using previous versions with VSOP87:
+Jzero 2.0 uses Swiss Ephemeris exclusively:
 
 ```javascript
-// OLD (VSOP87):
+// Current (Swiss Ephemeris):
 // import { calculateSunPosition } from './astrology/core/planets.js';
 // const pos = calculateSunPosition(t);
 

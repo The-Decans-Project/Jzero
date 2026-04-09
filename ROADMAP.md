@@ -10,7 +10,7 @@
 
 - [x] Core time systems (Julian Day, ΔT corrections, LST)
 - [x] Multiple house systems (Placidus, Porphyry, Whole Sign, Equal)
-- [x] Basic planetary positions (VSOP87 foundation)
+- [x] Professional planetary positions (Swiss Ephemeris)
 - [x] Geolocation database (100+ cities)
 - [x] House calculations (ASC, MC, DSC, IC)
 - [x] Time zone and DST handling

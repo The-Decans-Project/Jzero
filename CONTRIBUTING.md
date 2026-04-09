@@ -101,7 +101,7 @@ test/               # Test files
 
 4. **Accuracy**
    - Astronomical calculations must be precise to ±0.1° or better
-   - Reference sources: Meeus' "Astronomical Algorithms", VSOP2013, Swiss Ephemeris
+   - Reference sources: Meeus' "Astronomical Algorithms", Swiss Ephemeris
    - Include accuracy notes in comments
 
 #### Pull Request Process
@@ -118,10 +118,10 @@ test/               # Test files
 
 3. **Commit Messages**
    ```
-   feat: implement VSOP87 planetary calculations for Mercury
+   feat: implement Swiss Ephemeris calculations for Mercury
    
    - Adds accurate inner planet positions to ±0.1°
-   - Uses VSOP87 series from Meeus
+   - Uses Swiss Ephemeris
    - Includes test against known positions for year 2000
    
    Closes #42
@@ -206,7 +206,7 @@ See [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)
 |------|---|---|
 | Core calculations (`astrology/core/`) | TBD | Accuracy, performance, astronomical correctness |
 | House systems | TBD | Different calculation methods, testing |
-| Planetary positions | TBD | VSOP87 integration, Swiss Ephemeris alignment |
+| Planetary positions | ✅ Done | Swiss Ephemeris integration complete |
 | Utilities | TBD | Geolocation, database, helpers |
 | Documentation | TBD | Examples, guides, architecture |
 | Testing | Community | Validation against reference data |

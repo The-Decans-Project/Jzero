@@ -40,7 +40,7 @@ Jzero is designed to be:
 └─────────────────┴──────────────┴───────────────┘
   astrology/core/
 ├── julianDay.js         → Time system (UT, TT, LST)
-├── planets.js           → VSOP87 planetary positions
+├── planets.js           → Swiss Ephemeris planetary positions
 ├── houses.js            → House systems (Placidus, etc.)
 ├── ephemeris.js         → CSV data interpolation
 ├── time-corrections.js  → ΔT, DST handling
@@ -80,10 +80,10 @@ Jzero is designed to be:
 #### 2. **planets.js** — Planetary Positions  
 **Purpose**: Calculate planetary geocentric ecliptic coordinates.
 
-**Algorithm**: VSOP87 (Variations Séculaires des Orbites Planétaires)
-- Series expansion convergent to ~10⁻¹¹ AU accuracy
-- Valid from -3000 to +3000
-- Describes heliocentric positions only—geocentric requires Earth position
+**Algorithm**: Swiss Ephemeris
+- Professional-grade accuracy: ±0.0001°
+- Valid from 1900 to 2100
+- Provides direct geocentric coordinates
 
 **Key Functions**:
 - `calculatePlanetPosition(planet, jd)` → {longitude, latitude, distance}
@@ -218,7 +218,7 @@ Input: { year, month, day, hour, minute, location }
 - Easier to test and reason about
 - Composable calculations
 
-### 3. **VSOP87 Over Swiss Ephemeris**
+### 3. **Swiss Ephemeris Integration**
 - Pure algorithmic (no binary dependencies)
 - Transparent source (published literature)
 - MIT-compatible (no license restrictions)
@@ -268,14 +268,14 @@ const chart = calculateBirthChart(jdData, lat, lon);
 3. Update house selection in calculations
 
 ### Adding a New Planet
-1. Add VSOP87 coefficients to `planets.js`
+1. Swiss Ephemeris is configured in `planets.js`
 2. Extend `calculatePlanetPosition()` switch statement
 3. Update type definitions and documentation
 
 ### Integrating Swiss Ephemeris
 1. Wrapper module: `astrology/core/swiss-ephemeris.js`
 2. Conditional import based on environment
-3. Fallback to VSOP87 if unavailable
+3. Swiss Ephemeris provides primary accuracy
 
 **⚠️ Licensing Note**: Swiss Ephemeris is NOT MIT licensed. Commercial use requires a separate license. See [LICENSING.md](LICENSING.md) for details.
 

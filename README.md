@@ -115,7 +115,7 @@ npm run dev:full
                    │
 ┌──────────────────┴──────────────────────┐
 │  Core Calculations                      │
-│  (VSOP87, House Systems, Time)          │
+│  (Swiss Ephemeris, House Systems, Time) │
 └──────────────────┬──────────────────────┘
                    │
 ┌──────────────────┴──────────────────────┐
@@ -128,7 +128,7 @@ npm run dev:full
 | Module | Purpose | Accuracy |
 |--------|---------|----------|
 | **julianDay.js** | Time system (UT, TT, LST) | ±0.001 sec |
-| **planets.js** | VSOP87 planetary positions | ±0.1° |
+| **planets.js** | Swiss Ephemeris planetary positions | ±0.0001° |
 | **houses.js** | House systems & cusps | ±0.01° |
 | **ephemeris.js** | CSV data interpolation | ±0.01° |
 | **time-corrections.js** | ΔT, DST, timezones | ±0 min |
@@ -148,7 +148,7 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed technical design.
 | Component | Accuracy | Valid Range | Source |
 |-----------|----------|-------------|--------|
 | **Julian Day** | ±0.001 sec | -4000 to +8000 | NASA ΔT polynomial |
-| **Planetary positions** | ±0.1° | 1950-2050 | VSOP87 |
+| **Planetary positions** | ±0.0001° | 1950-2050 | Swiss Ephemeris |
 | **House cusps** | ±0.01° | Any latitude | Placidus algorithm |
 | **Time zones** | Exact | Any location | Database |
 
@@ -159,7 +159,7 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed technical design.
 2. **House Systems** — Placidus, Porphyry, Whole Sign, Equal
 3. **Chart Angles** — Ascendant, MC, Descendant, IC
 4. **Geolocation** — City database, coordinate management
-5. **Planetary Calculations** — VSOP87 algorithm for all planets
+5. **Planetary Calculations** — Swiss Ephemeris for all planets
 
 ### 🚀 Perfect For
 - Building astrology tools and applications
@@ -182,7 +182,7 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed technical design.
 ### Technologies & Patterns
 - **Pure JavaScript** (ES6 modules, functional programming)
 - **Astronomical algorithms** from Meeus & Nautical Almanac
-- **VSOP87 theory** (planetary orbit calculations)
+- **Swiss Ephemeris** (professional-grade planetary calculations)
 - **CSV data** (ephemeris interpolation)
 - **Timezone databases** (IANA TZ format)
 

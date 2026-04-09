@@ -1,7 +1,7 @@
 /**
  * Planetary Data and Calculations
  * Uses Swiss Ephemeris for accurate PROFESSIONAL-GRADE calculations
- * Fallback to VSOP87 orbital elements for reference
+ * Uses Swiss Ephemeris for all planetary calculations
  * 
  * @module astrology/core/planets
  */
