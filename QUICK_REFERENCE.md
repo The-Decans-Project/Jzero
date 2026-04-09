@@ -1,37 +1,40 @@
 # Jzero Quick Reference
 
-## 🚀 Getting Started (30 seconds)
+## Start
 
 ```bash
-# Setup
 cp .env.example .env
-
-# Development
-npm run dev
-
-# Production
-NODE_ENV=production npm start
-
-# Test it
+npm run dev                        # API on port 3001
 curl http://localhost:3001/api/health
 ```
 
-## 📚 Key Files
+## Key Files
 
 | File | Purpose |
 |------|---------|
-| `astrology/index.js` | Main entry point, exports all modules |
+| `astrology/index.js` | Main entry point, exports everything |
+| `astrology/core/calculator.js` | Birth chart calculator |
+| `server/api.js` | Express API server |
 | `.env.example` | Configuration template |
-| `DEVELOPER_GUIDE.md` | Complete setup & deployment guide |
-| `PROFESSIONAL_SYSTEM.md` | System overview & features |
 
-## 🛡️ Error Handling
+## Common Imports
 
 ```javascript
-import { ValidationError, CalculationError } from 'jzero/core/errors.js';
+import { calculateBirthChart } from './astrology/core/calculator.js';
+import { dateToJulianDayTT, longitudeToZodiac } from './astrology/index.js';
+import { getAllPlanetPositions, getHouses } from './astrology/index.js';
+import { calculateSynastry } from './astrology/calculations/synastry.js';
+import { calculateSecondaryProgression } from './astrology/calculations/progressions.js';
+import { searchCities } from './astrology/utilities/geolocation.js';
+```
+
+## Error Handling
+
+```javascript
+import { ValidationError, CalculationError } from './astrology/core/errors.js';
 
 try {
-  const data = calculateChart(input);
+  const chart = calculateBirthChart(input);
 } catch (error) {
   if (error instanceof ValidationError) {
     console.error('Invalid input:', error.field);
@@ -41,245 +44,85 @@ try {
 }
 ```
 
-## ✅ Input Validation
+## Input Validation
 
 ```javascript
-import { validateBirthChartData } from 'jzero/core/validator.js';
+import { validateBirthChartData } from './astrology/core/validator.js';
 
-try {
-  const validated = validateBirthChartData({
-    date: '1994-03-01',
-    time: '14:28:00',
-    latitude: 40.7128,
-    longitude: -74.0060
-  });
-  // All validated and safe
-} catch (error) {
-  // error.field tells you which field failed
-  console.error(`Invalid ${error.field}: ${error.message}`);
-}
+const validated = validateBirthChartData({
+  date: '1994-03-01',
+  time: '14:28:00',
+  latitude: 40.7128,
+  longitude: -74.0060
+});
 ```
 
-## 📊 Logging
+## Logging
 
 ```javascript
-import { createLogger } from 'jzero/core/logger.js';
+import { createLogger } from './astrology/core/logger.js';
 
-const logger = createLogger('MyApp');
-
-logger.debug('Debug info', { context: 'data' });
-logger.info('Chart calculated', { nodes: 10 });
-logger.warn('Slow calculation', { duration: 5000 });
-logger.error('Calculation failed', { code: 'NaN' });
-logger.exception(error);  // Format exception with context
+const logger = createLogger('MyModule');
+logger.debug('...', { data });
+logger.info('...', { event });
+logger.warn('...');
+logger.error('...', { details });
+logger.exception(error);
 ```
 
-**Environment Control**:
 ```bash
-LOG_LEVEL=DEBUG        # Show all logs
-LOG_LEVEL=WARN         # Show only warnings+
+LOG_LEVEL=DEBUG        # DEBUG, INFO, WARN, ERROR, CRITICAL
 LOG_STACK=true         # Include stack traces
 ```
 
-## ⚙️ Configuration
+## API Patterns (Express)
 
 ```javascript
-import config from 'jzero/core/config.js';
+import { asyncHandler, errorHandler, success } from './server/middleware.js';
 
-// Get values (with defaults)
-const port = config.get('server.port', 3001);
-const logLevel = config.get('logging.level');
-
-// Set values
-config.set('logging.level', 'DEBUG');
-
-// Check if exists
-if (config.has('cache.enabled')) {
-  // ...
-}
-
-// Get all
-const allSettings = config.getAll();
-
-// Validate
-const errors = config.validate();
-```
-
-**Common Settings**:
-```javascript
-config.get('server.port')           // 3001
-config.get('server.environment')    // 'development'
-config.get('logging.level')         // 'INFO'
-config.get('cache.enabled')         // true
-config.get('ephemeris.dataPath')    // './data'
-```
-
-## 🌐 Express API Patterns
-
-```javascript
-import express from 'express';
-import { asyncHandler, errorHandler, success, error } from './server/middleware.js';
-
-const app = express();
-
-// Handle async routes properly
 app.post('/api/calculate', asyncHandler(async (req, res) => {
-  const result = await calculateChart(req.body);
-  res.json(success(result, 'Chart calculated'));
+  const result = await calculateBirthChart(req.body);
+  res.json(success(result));
 }));
 
-// Errors automatically converted to JSON
-app.get('/api/chart/:id', asyncHandler(async (req, res) => {
-  const chart = await getChart(req.params.id);
-  if (!chart) throw new NotFoundError('Chart not found');
-  res.json(success(chart));
-}));
-
-// Error handling (attach last)
 app.use(errorHandler);
 ```
 
-## 📈 Health Endpoint
+## Health Endpoint
 
 ```bash
 curl http://localhost:3001/api/health
-
-{
-  "status": "healthy",
-  "version": "2.0.0",
-  "uptime": 123.45,
-  "memory": {
-    "heapUsed": 45,        // MB
-    "heapTotal": 512,      // MB
-    "external": 2          // MB
-  }
-}
+# { "status": "healthy", "version": "2.0.0", ... }
 ```
 
-## 🧪 Testing
+## Environment Variables
 
 ```bash
-npm test                # Run all tests
-npm run test:accuracy   # Accuracy specific
-npm run validate        # Test + lint
-```
-
-## 📝 Create .env File
-
-```bash
-# Copy template
-cp .env.example .env
-
-# Edit for your needs
-# Common settings:
-NODE_ENV=production
-PORT=3001
-LOG_LEVEL=INFO
-CACHE_ENABLED=true
-```
-
-## 🔍 Debugging
-
-```bash
-# Development mode with debug logging
-npm run dev
-
-# Shows: [timestamp] [DEBUG] [Module] Message
-
-# Production mode
-NODE_ENV=production LOG_LEVEL=WARN npm start
-
-# Shows only: [timestamp] [WARN] or [ERROR] [Module] Message
-```
-
-## 📊 Module Organization
-
-```
-Import from 'jzero':
-
-Calculations:
-├─ calculateBirthChart()
-├─ calculateTransits()
-├─ calculateSynastry()
-└─ calculateProgressions()
-
-Data:
-├─ dateToJulianDayTT()
-├─ calculateHouses()
-├─ longitudeToZodiac()
-└─ calculateAllPlanets()
-
-Professional:
-├─ createLogger()
-├─ validateBirthChartData()
-├─ config.get/set()
-└─ Custom error classes
-```
-
-## 🚢 Deployment Checklist
-
-- [ ] Copy `.env.example` to `.env`
-- [ ] Set `NODE_ENV=production`
-- [ ] Set `LOG_LEVEL=WARN` or `ERROR`
-- [ ] Enable caching: `CACHE_ENABLED=true`
-- [ ] Configure database path if needed
-- [ ] Run `npm run validate` (test + lint)
-- [ ] Start with `NODE_ENV=production npm start`
-- [ ] Check `/api/health` endpoint
-
-## 💾 Environment Variables (Common)
-
-```bash
-# Server
 NODE_ENV=production|development
 PORT=3001
 CORS_ORIGIN=*
-
-# Logging
 LOG_LEVEL=DEBUG|INFO|WARN|ERROR|CRITICAL
 LOG_STACK=true|false
-
-# Feature toggling
-FEATURE_BIRTH_CHART=true
-FEATURE_TRANSITS=true
-FEATURE_SYNASTRY=true
-
-# Caching
 CACHE_ENABLED=true|false
 CACHE_TTL=3600
-
-# Database
-DATABASE_TYPE=memory|sqlite|postgresql
-DATABASE_PATH=./data/charts.db
 ```
 
-## 📚 Documentation
+## npm Scripts
 
-- **Setup**: Read `DEVELOPER_GUIDE.md`
-- **Features**: Read `PROFESSIONAL_SYSTEM.md`
-- **Implementation**: Read `IMPLEMENTATION_SUMMARY.md`
-- **API**: Check `server/middleware.js` docs
-- **Config**: See `.env.example`
+```bash
+npm run dev          # Development server (port 3001)
+npm run dev:full     # API + React frontend
+npm start            # Production
+npm test             # Tests
+npm run validate     # Tests + lint
+npm run build        # Build frontend
+```
 
-## ✨ Tips
+## Docs
 
-1. **Always validate input**:  Use `validateBirthChartData()` before calculations
-
-2. **Use proper logging**: Replace `console.log()` with `logger.debug()`
-
-3. **Handle errors gracefully**: Catch specific error types, not generic `Error`
-
-4. **Configure for environment**: Use `.env` files, not hardcoded values
-
-5. **Check health endpoint**: Useful for monitoring production deployments
-
----
-
-**Quick Links**:
-- 📖 [Developer Guide](./DEVELOPER_GUIDE.md)
-- 🎯 [Professional System](./PROFESSIONAL_SYSTEM.md)
-- 📝 [Implementation Summary](./IMPLEMENTATION_SUMMARY.md)
-- ⚙️ [Configuration Template](./.env.example)
-
-**Version**: 2.0.0  
-**Status**: ✅ Production Ready
+- [QUICKSTART.md](QUICKSTART.md)
+- [GETTING_STARTED.md](GETTING_STARTED.md)
+- [DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md)
+- [SERVER_API.md](SERVER_API.md)
+- [ARCHITECTURE.md](ARCHITECTURE.md)
+- [.env.example](.env.example)

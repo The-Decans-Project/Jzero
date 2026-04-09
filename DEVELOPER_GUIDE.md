@@ -13,98 +13,23 @@ Open-source astrology calculations — birth charts, transits, progressions, syn
 - Structured logging
 - Express.js REST API
 - Works from any language via HTTP
-- Full JSDoc and API documentation
+- Full JSDoc documentation on all functions
 
-## 🚀 Quick Start
+---
 
-### Installation
+## Setup
 
 ```bash
-# Clone the repository
 git clone https://github.com/The-Decans-Project/Jzero.git
 cd Jzero
-
-# Install dependencies
 npm install
-
-# Setup frontend (if using web UI)
-npm run setup
-```
-
-### Configuration
-
-```bash
-# Copy environment template
 cp .env.example .env
-
-# Edit .env for your environment
-# See .env.example for all available options
-```
-
-### Running
-
-```bash
-# Development mode (with debug logging)
 npm run dev
-
-# Production mode
-NODE_ENV=production npm start
-
-# With full frontend
-npm run dev:full
 ```
 
-## 📚 API Documentation
+---
 
-### Health Check
-```bash
-GET /api/health
-```
-
-### Calculate Birth Chart
-```bash
-POST /api/chart/birth-chart
-
-Body: {
-  "date": "1994-03-01",
-  "time": "14:28:00",
-  "latitude": 40.7128,
-  "longitude": -74.0060,
-  "houseSystem": "porphyry"
-}
-
-Response: {
-  "success": true,
-  "data": {
-    "jd": 2449409.797,
-    "planets": { ... },
-    "houses": { ... },
-    "angles": { ... }
-  }
-}
-```
-
-### Calculate Transits
-```bash
-POST /api/chart/transits
-
-Body: {
-  "natalChart": { ... },
-  "transitDate": "2024-04-09"
-}
-
-Response: {
-  "success": true,
-  "data": {
-    "transits": [ ... ],
-    "aspects": [ ... ]
-  }
-}
-```
-
-## 🏗️ Architecture
-
-### Module Structure
+## Module Structure
 
 ```
 astrology/
@@ -114,51 +39,56 @@ astrology/
 │   ├── houses.js          # House system calculations
 │   ├── julianDay.js       # Julian Day & time conversions
 │   ├── planets.js         # Planetary constants & calculations
-│   ├── time-corrections.js # ΔT and other time corrections
+│   ├── swiss-ephemeris.js # Swiss Ephemeris integration
+│   ├── time-corrections.js# ΔT and other time corrections
 │   ├── errors.js          # Custom error classes
 │   ├── validator.js       # Input validation
 │   ├── logger.js          # Structured logging
 │   └── config.js          # Configuration management
 ├── calculations/          # Astrological techniques
-│   ├── houses.js
-│   ├── progressions.js
-│   ├── synastry.js
-│   └── transits.js
-├── utilities/             # Helper modules
-│   ├── geolocation.js
-│   └── chart-database.js
-└── index.js              # Main entry point
+│   ├── houses.js          # House system selection
+│   ├── progressions.js    # Secondary progressions, solar arcs, returns
+│   ├── synastry.js        # Chart comparison and composite
+│   └── transits.js        # Current and future transits
+├── utilities/
+│   ├── geolocation.js     # City database and coordinate helpers
+│   └── chart-database.js  # In-memory chart storage
+└── index.js               # Re-exports everything
 ```
 
-### Core Exports
+---
+
+## Key Imports
 
 ```javascript
-// Time calculations
-import { dateToJulianDayTT, calculateLST } from 'jzero';
+// Birth chart
+import { calculateBirthChart } from './astrology/core/calculator.js';
 
-// Planetary positions
-import { calculateAllPlanets, longitudeToZodiac } from 'jzero';
-
-// House systems
-import { calculateHouses } from 'jzero';
+// Time & coordinates
+import { dateToJulianDayTT, calculateLST } from './astrology/core/julianDay.js';
+import { longitudeToZodiac, calculateAllPlanets } from './astrology/core/planets.js';
+import { getAllPlanetPositions, getHouses } from './astrology/core/swiss-ephemeris.js';
 
 // Astrological techniques
-import { calculateTransits, calculateSynastry, calculateProgressions } from 'jzero';
+import { calculateTransits } from './astrology/calculations/transits.js';
+import { calculateSynastry } from './astrology/calculations/synastry.js';
+import { calculateSecondaryProgression } from './astrology/calculations/progressions.js';
 
-// Professional infrastructure
-import { createLogger, validateBirthChartData, config } from 'jzero';
+// Infrastructure
+import { createLogger } from './astrology/core/logger.js';
+import { validateBirthChartData } from './astrology/core/validator.js';
+import { ValidationError, CalculationError } from './astrology/core/errors.js';
+
+// Or import everything from the index
+import { calculateBirthChart, longitudeToZodiac, searchCities } from './astrology/index.js';
 ```
 
-## 🛡️ Error Handling
+---
 
-All functions include comprehensive error handling through custom error classes:
+## Error Handling
 
 ```javascript
-import { 
-  ValidationError, 
-  EphemerisError, 
-  CalculationError 
-} from 'jzero';
+import { ValidationError, EphemerisError, CalculationError } from './astrology/core/errors.js';
 
 try {
   const chart = calculateBirthChart(data);
@@ -166,196 +96,122 @@ try {
   if (error instanceof ValidationError) {
     console.error('Invalid input:', error.field);
   } else if (error instanceof EphemerisError) {
-    console.error('Missing ephemeris data for:', error.planet);
+    console.error('Ephemeris error:', error.planet);
   } else if (error instanceof CalculationError) {
     console.error('Calculation failed:', error.operation);
   }
 }
 ```
 
-## 📊 Logging
+---
 
-Structured logging at multiple levels:
+## Logging
 
 ```javascript
-import { createLogger } from 'jzero';
+import { createLogger } from './astrology/core/logger.js';
 
-const logger = createLogger('MyApp');
+const logger = createLogger('MyModule');
 
 logger.debug('Debug info', { context: 'data' });
-logger.info('Information', { event: 'chart_calculated' });
-logger.warn('Warning', { deprecation: 'old_api' });
-logger.error('Error', { error: details });
-logger.exception(error);  // Log exceptions with stack traces
+logger.info('Chart calculated', { event: 'birth_chart' });
+logger.warn('Slow calc', { duration: 5000 });
+logger.error('Failed', { details });
+logger.exception(error);
 ```
 
-Configuration via environment:
+Environment control:
 ```bash
-LOG_LEVEL=DEBUG        # DEBUG, INFO, WARN, ERROR, CRITICAL
-LOG_STACK=true         # Include stack traces
+LOG_LEVEL=DEBUG    # DEBUG, INFO, WARN, ERROR, CRITICAL
+LOG_STACK=true     # Include stack traces
 ```
 
-## ⚙️ Configuration
+---
 
-All settings can be configured via `.env`:
+## Configuration
+
+All settings via `.env`:
 
 ```bash
-# Server
-NODE_ENV=production
 PORT=3001
+NODE_ENV=production
 CORS_ORIGIN=https://example.com
-
-# Logging
 LOG_LEVEL=INFO
 LOG_STACK=false
-
-# Ephemeris
-EPHEMERIS_DATA_PATH=./data
-SWISS_EPHEMERIS=false
-
-# Caching
 CACHE_ENABLED=true
 CACHE_TTL=3600
 ```
 
-Or programmatically:
+---
 
-```javascript
-import config from 'jzero/core/config.js';
-
-const port = config.get('server.port');
-config.set('logging.level', 'DEBUG');
-
-// Validate configuration
-const errors = config.validate();
-```
-
-## 🧪 Testing
+## Running Commands
 
 ```bash
-# Run all tests
-npm test
-
-# Test accuracy
-npm run test:accuracy
-
-# Validate everything
-npm run validate
+npm run dev          # Development with debug logging (port 3001)
+npm run dev:full     # API + React frontend
+npm start            # Production
+npm test             # Run test suite
+npm run validate     # Tests + lint
+npm run build        # Build React frontend
 ```
 
-## 📖 Development
+---
 
-### Code Structure
-
-- **Pure Functions**: All calculations are pure functions with no side effects
-- **Error-First**: Functions throw descriptive errors on invalid input
-- **Immutable Data**: Calculations don't modify input objects
-- **Well-Documented**: Every function has JSDoc documentation
-
-### Adding New Calculations
+## Adding New Calculations
 
 ```javascript
 /**
- * Your calculation function
  * @param {number} jd - Julian Day Number
- * @param {Object} params - Calculation parameters
- * @returns {Object} Calculation results
+ * @param {Object} params - Parameters
+ * @returns {Object} Result
  * @throws {ValidationError} If parameters are invalid
- * @throws {CalculationError} If calculation fails
  */
-export function yourCalculation(jd, params = {}) {
-  // Validate inputs
-  const validParams = validateYourParams(params);
-  
-  // Perform calculation
-  const result = performCalculation(jd, validParams);
-  
-  // Return result
+export function myCalculation(jd, params = {}) {
+  const result = doMath(jd, params);
   return result;
 }
 ```
 
-### Logging in Calculations
+---
 
-```javascript
-import { createLogger } from '../core/logger.js';
+## Deployment
 
-const logger = createLogger('YourModule');
-
-export function expensiveCalculation(data) {
-  logger.debug('Starting calculation', { dataSize: data.length });
-  
-  try {
-    const result = doCalculation(data);
-    logger.info('Calculation complete', { resultType: typeof result });
-    return result;
-  } catch (error) {
-    logger.exception(error, { data: data.slice(0, 10) });
-    throw error;
-  }
-}
+```bash
+cp .env.example .env
+# Set NODE_ENV=production, LOG_LEVEL=WARN, CORS_ORIGIN=your-domain
+npm start
+curl http://localhost:3001/api/health
 ```
 
-## 🚢 Deployment
-
-### Production Checklist
-
-- [ ] Copy `.env.example` to `.env` and configure
-- [ ] Set `NODE_ENV=production`
-- [ ] Set `LOG_LEVEL=WARN` or `ERROR`
-- [ ] Enable caching: `CACHE_ENABLED=true`
-- [ ] Configure database for persistence
-- [ ] Setup monitoring/error tracking
-- [ ] Run validation: `npm run validate`
-- [ ] Test endpoints thoroughly
-
-### Docker (Optional)
-
+Docker:
 ```dockerfile
 FROM node:18-alpine
-
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci --only=production
-
 COPY . .
 EXPOSE 3001
-
 ENV NODE_ENV=production
 CMD ["npm", "start"]
 ```
 
-## 📝 Contributing
+---
 
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/amazing-feature`
-3. Commit changes: `git commit -m 'Add amazing feature'`
-4. Push to branch: `git push origin feature/amazing-feature`
-5. Open a Pull Request
+## Testing
 
-### Code Standards
-
-- ESLint configuration enforced
-- 100% functions must have JSDoc
-- All public APIs must have error handling
-- Configuration changes require environment variable support
-
-## 📄 License
-
-MIT License - See LICENSE file
-
-## 🤝 Support
-
-- 📖 [Documentation](./docs)
-- 🐛 [Report Issues](https://github.com/The-Decans-Project/Jzero/issues)
-- 💬 [Discussions](https://github.com/The-Decans-Project/Jzero/discussions)
-
-## ⭐ Credits
-
-Built by the Jzero community with support from The-Decans-Project
+```bash
+npm test             # All tests
+npm run test:accuracy# Accuracy validation
+npm run validate     # Tests + lint
+```
 
 ---
 
-**Current Version**: 2.0.0 (Professional Release)  
-**Status**: Production Ready ✅  
-**Last Updated**: 2026-04-09
+## Contributing
+
+1. Fork the repo
+2. `git checkout -b feature/your-feature`
+3. Make changes with JSDoc on all public functions
+4. `npm run validate`
+5. Open a pull request
+
+See [CONTRIBUTING.md](CONTRIBUTING.md).
