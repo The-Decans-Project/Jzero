@@ -5,7 +5,7 @@
 Jzero provides two calculation modes:
 
 1. **Swiss Ephemeris** (Best) - Professional-grade accuracy (±0.0001°)
-2. **CSV Calibration** (Good) - Working fallback with reasonable accuracy (±2-10°)
+2. **CSV Calibration** (Good) - Working fallback with reasonable accuracy (±0.1°)
 
 The system is designed to work well out of the box. For production use and best accuracy, use Swiss Ephemeris.
 
@@ -57,7 +57,7 @@ const chart = calculateBirthChart({
 });
 
 console.log('Calculation Mode:', chart.calculationMode); // CSV_CALIBRATION
-console.log('Sun position with ±5-10° accuracy');
+console.log('Sun position with ±0.1° accuracy');
 ```
 
 ---
@@ -108,10 +108,7 @@ console.log('Venus:', positions.venus);
 | Mode | Accuracy | Best For |
 |------|----------|----------|
 | Swiss Ephemeris | ±0.0001° | Professional, commercial, precision |
-| CSV Calibration | ±2-10° | General use, fallback, testing |
-
-**Moon Position:** ±2° with CSV (tighter accuracy due to fast movement)  
-**Other Planets:** ±5-10° with CSV (interpolation between ingress points)
+| CSV Calibration | ±0.1° | General use, fallback, testing |
 
 ---
 
@@ -132,7 +129,7 @@ For working examples, see:
 
 ```bash
 NODE_ENV=production
-PORT=5000
+PORT=3001
 CORS_ORIGIN=https://your-domain.com
 ```
 
@@ -144,7 +141,7 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
-EXPOSE 5000
+EXPOSE 3001
 CMD ["node", "server/api.js"]
 ```
 

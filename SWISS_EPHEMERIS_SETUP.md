@@ -56,8 +56,6 @@ console.log(sunPos.longitude);  // Degrees
 
 - License questions: Contact Astodienst directly (Swiss Ephemeris)
 - Jzero integration: Open an [issue](https://github.com/The-Decans-Project/Jzero/issues)
-  houses: houses.houses.map(h => h.toFixed(2))
-});
 ```
 
 ### House System Options
@@ -240,27 +238,6 @@ for (let i = 0; i < 10; i++) {
 // ✅ Fast: Single batch call
 const positions = getAllPlanetPositions(jd);
 ```
-
-## Current System
-
-Jzero 2.0 uses Swiss Ephemeris exclusively:
-
-```javascript
-// Current (Swiss Ephemeris):
-// import { calculateSunPosition } from './astrology/core/planets.js';
-// const pos = calculateSunPosition(t);
-
-// NEW (Swiss Ephemeris):
-import { getPlanetPosition, initializeEphemeris } from './astrology/index.js';
-initializeEphemeris();
-const pos = getPlanetPosition('Sun', jd);
-```
-
-Key differences:
-- Input is now Julian Day (more intuitive)
-- Accuracy is dramatically improved (±0.0001°)
-- Returns structured object with metadata
-- Includes proper motion speeds
 
 ## Performance
 

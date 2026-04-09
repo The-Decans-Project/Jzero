@@ -254,7 +254,7 @@ export default defineConfig({
     port: 3000,
     proxy: {
       '/api': {
-        target: 'http://localhost:5000',
+        target: 'http://localhost:3001',
         changeOrigin: true,
       }
     }
@@ -533,10 +533,8 @@ npm run dev
 
 Check that all files are saved (VS Code might show modified files).
 
-## Next Steps
+## More
 
-1. Read [public/app/README.md](public/app/README.md) for component details
-2. Study existing components (BirthChartForm, PlanetaryTable, etc.)
-3. Explore Tailwind docs for styling patterns
-4. Try adding a new shadcn/ui component
-5. Experiment with responsive design at different breakpoints
+- [public/app/README.md](public/app/README.md) — component details
+- [Tailwind CSS docs](https://tailwindcss.com/) — styling reference
+- [shadcn/ui](https://ui.shadcn.com/) — component library

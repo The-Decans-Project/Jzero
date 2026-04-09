@@ -1,6 +1,6 @@
-# Jzero Frontend - React Application
+# Jzero Frontend
 
-Professional React frontend for the Jzero Astrology Birth Chart Calculator. Built with modern tooling, shadcn/ui components, and Tailwind CSS for fast development and optimized production builds.
+React frontend for the Jzero birth chart calculator. Built with shadcn/ui and Tailwind CSS.
 
 ## Features
 
@@ -28,7 +28,7 @@ Professional React frontend for the Jzero Astrology Birth Chart Calculator. Buil
 ### Prerequisites
 
 - Node.js 18+ and npm/yarn
-- Backend server running on `http://localhost:5000`
+- Backend server running on `http://localhost:3001`
 
 ### Installation
 
@@ -165,7 +165,7 @@ All API calls use native `fetch` API (no axios needed):
 
 ```javascript
 // Example API call
-const response = await fetch('http://localhost:5000/api/calculate-chart', {
+const response = await fetch('http://localhost:3001/api/calculate-chart', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify(formData)
@@ -205,7 +205,7 @@ Create `.env.local`:
 
 ```env
 # API endpoint (default: backend on port 5000)
-VITE_API_BASE_URL=http://localhost:5000/api
+VITE_API_BASE_URL=http://localhost:3001/api
 
 # App title for browser tab
 VITE_APP_TITLE=Jzero - Astrology Birth Chart Calculator
@@ -273,7 +273,7 @@ Response:
 
 ### City Search
 ```
-GET /api/locations?q=New York
+GET /api/locations?search=New York
 
 Response:
 [
@@ -599,6 +599,5 @@ MIT License - See [LICENSE](../../LICENSE)
 
 ## Support
 
-- **Issues**: Report bugs on [GitHub Issues](https://github.com/yourusername/Jzero/issues)
-- **Discussions**: Join [GitHub Discussions](https://github.com/yourusername/Jzero/discussions)
-- **Funding**: Support development on [GitHub Sponsors](https://github.com/sponsors/yourusername)
+- **Issues**: [GitHub Issues](https://github.com/The-Decans-Project/Jzero/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/The-Decans-Project/Jzero/discussions)
