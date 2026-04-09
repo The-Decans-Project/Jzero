@@ -1,33 +1,69 @@
 {
-  "name": "open-source-astrology-calculator",
-  "version": "1.0.0",
-  "description": "Free, open-source astrology calculator using Julian Day forward calculations. Giving back to the community! 🌟",
+  "name": "jzero",
+  "version": "2.0.0",
+  "description": "Open-source astrology calculations. Birth charts, transits, progressions, synastry. Built with community in mind.",
   "type": "module",
-  "main": "src/calculator.js",
+  "main": "astrology/index.js",
+  "exports": {
+    ".": "./astrology/index.js",
+    "./calculator": "./astrology/core/calculator.js",
+    "./csv": "./astrology/core/csv-calculator.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "scripts": {
-    "dev": "npx serve public -p 3000",
-    "test": "node --experimental-modules test/test.js",
-    "start": "npx serve public -p 8080"
+    "test": "node test/test-jd.js && node test/test-inner-planets.js && node test/test-geolocation.js",
+    "test:accuracy": "node test/test-accuracy.js",
+    "start": "node server/api.js",
+    "dev": "NODE_ENV=development LOG_LEVEL=DEBUG node server/api.js",
+    "build": "npm run build:frontend",
+    "build:frontend": "cd public/app && npm run build",
+    "dev:full": "concurrently \"npm run dev\" \"cd public/app && npm run dev\"",
+    "setup": "npm install && cd public/app && npm install && cd ../..",
+    "lint": "eslint . --ext .js",
+    "validate": "npm run test && npm run lint",
+    "docs": "node scripts/generate-docs.js",
+    "validate:config": "node scripts/validate-config.js"
   },
   "keywords": [
     "astrology",
+    "ephemeris",
+    "swiss-ephemeris",
     "birth-chart",
     "natal-chart",
     "julian-day",
-    "ephemeris",
     "planets",
     "zodiac",
     "houses",
+    "transits",
+    "progressions",
+    "synastry",
     "open-source",
     "astronomy",
     "calculator"
   ],
-  "author": "Community Contribution",
+  "author": "The-Decans-Project/Jzero Contributors",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/astrology-calculator"
+    "url": "https://github.com/The-Decans-Project/Jzero"
   },
-  "devDependencies": {},
-  "dependencies": {}
+  "funding": {
+    "type": "individual",
+    "url": "https://github.com/sponsors/The-Decans-Project"
+  },
+  "bugs": {
+    "url": "https://github.com/The-Decans-Project/Jzero/issues"
+  },
+  "devDependencies": {
+    "jest": "^29.0.0",
+    "concurrently": "^8.2.0"
+  },
+  "dependencies": {
+    "express": "^4.18.0"
+  },
+  "optionalDependencies": {
+    "swisseph": "^2.10.0"
+  }
 }

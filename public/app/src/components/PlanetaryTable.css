@@ -1,0 +1,347 @@
+/* Planetary Table Styles */
+
+.planetary-table-container {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.planetary-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+/* Table Header */
+.planetary-table thead {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  font-weight: 600;
+}
+
+.planetary-table thead th {
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+/* Table Body */
+.planetary-table tbody tr {
+  border-bottom: 1px solid #e0e0e0;
+  transition: background-color 0.2s ease;
+}
+
+.planetary-table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.planetary-table tbody tr:nth-child(even) {
+  background-color: #fafafa;
+}
+
+.planetary-table tbody tr:nth-child(even):hover {
+  background-color: #f0f0f0;
+}
+
+.planetary-table tbody td {
+  padding: 1rem;
+  color: #333;
+  font-family: 'Courier New', monospace;
+}
+
+/* Planet Name Cell */
+.planet-name {
+  font-weight: 600;
+  color: #222;
+  font-family: system-ui;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+}
+
+.planet-symbol {
+  font-size: 1.2rem;
+  display: inline-block;
+}
+
+/* Sign Cell */
+.zodiac-sign {
+  font-weight: 600;
+  color: #667eea;
+  text-align: center;
+  min-width: 40px;
+}
+
+/* Degree Cell */
+.degree-value {
+  font-weight: 600;
+  color: #333;
+  text-align: right;
+  min-width: 60px;
+}
+
+/* Longitude/Latitude Cells */
+.coordinate-value {
+  text-align: right;
+  color: #666;
+  min-width: 90px;
+  font-family: 'Courier New', monospace;
+}
+
+/* Distance Cell */
+.distance-value {
+  text-align: right;
+  color: #999;
+  min-width: 80px;
+}
+
+/* Speed Cell */
+.speed-value {
+  text-align: right;
+  color: #999;
+  min-width: 70px;
+}
+
+/* Retrograde Indicator */
+.retrograde-badge {
+  display: inline-block;
+  background: #ffe0e0;
+  color: #c0392b;
+  padding: 0.2rem 0.5rem;
+  border-radius: 3px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-left: 0.25rem;
+}
+
+/* Accuracy Note */
+.accuracy-label {
+  font-size: 0.75rem;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  font-weight: 600;
+}
+
+/* Table Footer */
+.planetary-table tfoot {
+  background: #f5f5f5;
+  border-top: 2px solid #e0e0e0;
+}
+
+.planetary-table tfoot td {
+  padding: 1rem;
+  font-size: 0.85rem;
+  color: #666;
+  font-style: italic;
+}
+
+/* Summary Row */
+.summary-row {
+  background: #f0f8ff;
+  border-top: 2px solid #d4e8f7;
+  border-left: 4px solid #667eea;
+}
+
+.summary-row td {
+  padding: 1rem;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.summary-row strong {
+  color: #222;
+}
+
+/* Column Groups (for visual organization) */
+.position-columns {
+  border-right: 2px solid #e0e0e0;
+}
+
+.motion-columns {
+  border-right: 2px solid #e0e0e0;
+}
+
+/* Table Title */
+.table-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #222;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.table-subtitle {
+  font-size: 0.85rem;
+  color: #999;
+  font-weight: normal;
+  margin-top: 0.25rem;
+}
+
+/* Controls Above Table */
+.table-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.table-export {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn-export {
+  padding: 0.5rem 1rem;
+  border: 1px solid #ddd;
+  background: white;
+  color: #666;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-export:hover {
+  border-color: #667eea;
+  color: #667eea;
+  background: #f8f9fa;
+}
+
+/* Info Box */
+.table-info {
+  display: flex;
+  gap: 1rem;
+  background: #f0f8ff;
+  border-left: 4px solid #667eea;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.table-info-icon {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.table-info p {
+  margin: 0;
+  line-height: 1.5;
+}
+
+.table-info strong {
+  color: #222;
+}
+
+/* Legend */
+.table-legend {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: #f5f5f5;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.legend-item {
+  display: inline-block;
+  margin-right: 2rem;
+  white-space: nowrap;
+}
+
+.legend-item strong {
+  color: #333;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .planetary-table {
+    font-size: 0.85rem;
+  }
+
+  .planetary-table thead th,
+  .planetary-table tbody td {
+    padding: 0.75rem;
+  }
+
+  .coordinate-value {
+    min-width: 70px;
+  }
+}
+
+@media (max-width: 768px) {
+  .planetary-table-container {
+    margin: 0 -1.5rem;
+  }
+
+  .planetary-table {
+    font-size: 0.75rem;
+  }
+
+  .planetary-table thead th,
+  .planetary-table tbody td {
+    padding: 0.5rem;
+  }
+
+  .planet-name {
+    gap: 0.25rem;
+  }
+
+  .planet-symbol {
+    font-size: 1rem;
+  }
+
+  /* Hide less important columns on mobile */
+  .distance-value,
+  .speed-value {
+    display: none;
+  }
+
+  .planetary-table thead th:nth-child(6),
+  .planetary-table thead th:nth-child(7),
+  .planetary-table tbody td:nth-child(6),
+  .planetary-table tbody td:nth-child(7) {
+    display: none;
+  }
+
+  .table-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .table-export {
+    justify-content: center;
+  }
+
+  .btn-export {
+    flex: 1;
+    min-width: 100px;
+  }
+
+  .table-legend {
+    display: none;
+  }
+}
+
+/* Dark Mode Support (optional) */
+@media (prefers-color-scheme: dark) {
+  .planetary-table tbody tr:hover {
+    background-color: rgba(102, 126, 234, 0.1);
+  }
+
+  .planetary-table tbody tr:nth-child(even):hover {
+    background-color: rgba(102, 126, 234, 0.15);
+  }
+}

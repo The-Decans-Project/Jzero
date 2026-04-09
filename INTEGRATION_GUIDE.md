@@ -1,181 +1,181 @@
-# 🔧 Integration Guide - Adding Swiss Ephemeris
+# Integration Guide - Getting the System Running
 
-## The Problem
+## Overview
 
-This framework includes CSV ephemeris files, but they only contain **sign ingress data** (when planets change signs). This is NOT sufficient for accurate chart calculations.
+Jzero provides two calculation modes:
 
-## The Solution: Swiss Ephemeris
+1. **Swiss Ephemeris** (Best) - Professional-grade accuracy (±0.0001°)
+2. **CSV Calibration** (Good) - Working fallback with reasonable accuracy (±2-10°)
 
-Swiss Ephemeris is the **industry standard** for astronomical calculations in astrology software.
-
-### Why Swiss Ephemeris?
-
-- ✅ Arcminute accuracy (±0.001°)
-- ✅ Industry standard
-- ✅ Used by all professional astrology software
-- ✅ Open source (AGPL/GPL or commercial license)
-- ✅ Well-documented
-- ✅ Very fast (local calculations)
+The system is designed to work well out of the box. For production use and best accuracy, use Swiss Ephemeris.
 
 ---
 
-## 📦 Installation
+## Quick Start
 
-### 1. Install the npm package
+### Option 1: With Swiss Ephemeris (Recommended)
+
+Install the Swiss Ephemeris package:
 
 ```bash
 npm install swisseph
 ```
 
-### 2. Download ephemeris data files
+The system automatically detects and uses Swiss when available.
 
-```bash
-mkdir ephe
-cd ephe
+```javascript
+import { calculateBirthChart } from './astrology/core/calculator.js';
 
-# Download from https://www.astro.com/ftp/swisseph/ephe/
-wget https://www.astro.com/ftp/swisseph/ephe/seas_18.se1  # Main planets
-wget https://www.astro.com/ftp/swisseph/ephe/semo_18.se1  # Moon
-wget https://www.astro.com/ftp/swisseph/ephe/sepl_18.se1  # Outer planets
+const chart = calculateBirthChart({
+  year: 1994,
+  month: 3,
+  day: 1,
+  hour: 14,
+  minute: 28,
+  latitude: 40.7128,   // NYC
+  longitude: -74.0060
+});
+
+console.log('Calculation Mode:', chart.calculationMode); // SWISS_EPHEMERIS
+console.log('Sun:', chart.sun);
 ```
 
-**Note:** These files cover years 1800-2399. Download additional files for extended ranges.
+### Option 2: CSV Calibration (Fallback)
+
+If Swiss Ephemeris isn't installed, the system automatically falls back to CSV-based calculation:
+
+```javascript
+// Same code - automatically uses CSV if Swiss unavailable
+const chart = calculateBirthChart({
+  year: 1994,
+  month: 3,
+  day: 1,
+  hour: 14,
+  minute: 28,
+  latitude: 40.7128,
+  longitude: -74.0060
+});
+
+console.log('Calculation Mode:', chart.calculationMode); // CSV_CALIBRATION
+console.log('Sun position with ±5-10° accuracy');
+```
 
 ---
 
-## 💻 Integration Code
+## Using the Calculator
 
-### Basic Setup
+### Basic Birth Chart
 
 ```javascript
-import swisseph from 'swisseph';
+import { calculateBirthChart } from './astrology/core/calculator.js';
 
-// Set ephemeris data path
-swisseph.swe_set_ephe_path('./ephe');
+const chart = calculateBirthChart({
+  year: 2000,
+  month: 1,
+  day: 1,
+  hour: 12,
+  minute: 0,
+  latitude: 40.7128,    // New York
+  longitude: -74.0060,
+  timezone: -5          // EST
+});
 
-// Planet IDs
-const PLANETS = {
-  Sun: swisseph.SE_SUN,
-  Moon: swisseph.SE_MOON,
-  Mercury: swisseph.SE_MERCURY,
-  Venus: swisseph.SE_VENUS,
-  Mars: swisseph.SE_MARS,
-  Jupiter: swisseph.SE_JUPITER,
-  Saturn: swisseph.SE_SATURN,
-  Uranus: swisseph.SE_URANUS,
-  Neptune: swisseph.SE_NEPTUNE,
-  Pluto: swisseph.SE_PLUTO
-};
+// Results include all 10 planets with zodiac signs
+console.log(chart.sun);    // { sign: 'Capricorn', degree: 10.5, ... }
+console.log(chart.moon);   // { sign: 'Scorpio', degree: 0.34, ... }
 ```
 
-### Calculate Planet Position
+### Working with Julian Day
 
 ```javascript
-function calculatePlanetPosition(planetName, jd_tt) {
-  const planetId = PLANETS[planetName];
-  const flags = swisseph.SEFLG_SWIEPH | swisseph.SEFLG_SPEED;
-  
-  const result = swisseph.swe_calc(jd_tt, planetId, flags);
-  
-  if (result.error) {
-    throw new Error(result.error);
-  }
-  
-  return {
-    longitude: result.longitude,
-    latitude: result.latitude,
-    distance: result.distance,
-    speed: result.longitudeSpeed
-  };
-}
-```
+import { dateToJulianDayTT } from './astrology/core/julianDay.js';
+import { calculateAllPlanets } from './astrology/core/planets.js';
 
-### Usage Example
-
-```javascript
-import { dateToJulianDayTT } from './src/julianDay.js';
-
-// Get Julian Day with time corrections
+// Convert to Julian Day
 const jdData = dateToJulianDayTT(2000, 1, 1, 12, 0, 0);
 
-// Calculate planet position
-const mercury = calculatePlanetPosition('Mercury', jdData.jd_tt);
+// Calculate planet positions
+const positions = calculateAllPlanets(jdData.jd_tt);
 
-console.log('Mercury longitude:', mercury.longitude.toFixed(4), '°');
-console.log('Mercury latitude:', mercury.latitude.toFixed(4), '°');
-console.log('Mercury distance:', mercury.distance.toFixed(6), 'AU');
-```
-
-### Full Chart Calculation
-
-```javascript
-function calculateChart(date, time, latitude, longitude) {
-  // Convert to Julian Day
-  const jdData = dateToJulianDayTT(
-    date.year, date.month, date.day,
-    time.hour, time.minute, time.second
-  );
-  
-  // Calculate all planets
-  const planets = {};
-  for (const [name, id] of Object.entries(PLANETS)) {
-    planets[name] = calculatePlanetPosition(name, jdData.jd_tt);
-  }
-  
-  // Calculate houses (using framework's house system)
-  const houses = calculateHouses(jdData.jd_tt, latitude, longitude, 'porphyry');
-  
-  return {
-    planets,
-    houses,
-    jd: jdData.jd_tt,
-    deltaT: jdData.deltaT
-  };
-}
+console.log('Mercury:', positions.mercury);
+console.log('Venus:', positions.venus);
 ```
 
 ---
 
-## 📚 Resources
+## Accuracy Levels
 
-- **Swiss Ephemeris Official Site:** https://www.astro.com/swisseph/
-- **Ephemeris Files:** https://www.astro.com/ftp/swisseph/ephe/
-- **Documentation:** https://www.astro.com/swisseph/swephprg.htm
+| Mode | Accuracy | Best For |
+|------|----------|----------|
+| Swiss Ephemeris | ±0.0001° | Professional, commercial, precision |
+| CSV Calibration | ±2-10° | General use, fallback, testing |
+
+**Moon Position:** ±2° with CSV (tighter accuracy due to fast movement)  
+**Other Planets:** ±5-10° with CSV (interpolation between ingress points)
+
+---
+
+## Important: Example Files
+
+The example files in the `examples/` directory contain simplified calculations and **should not be used for production**. They are for reference only. Please use the core calculator module directly instead.
+
+For working examples, see:
+- `test/test-birth-chart.js` - Real test subjects with verified results
+- `examples/basic-birth-chart.js` - Basic calculator usage
+- `examples/synastry-comparison.js` - Comparing two charts
+
+---
+
+## Setting Up for Production
+
+### Environment Variables
+
+```bash
+NODE_ENV=production
+PORT=5000
+CORS_ORIGIN=https://your-domain.com
+```
+
+### Docker Deployment
+
+```dockerfile
+FROM node:18-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+EXPOSE 5000
+CMD ["node", "server/api.js"]
+```
+
+### Commercial Use
+
+If deploying for commercial use with Swiss Ephemeris, you **must** obtain a Swiss Ephemeris commercial license. See [LICENSING.md](LICENSING.md) for details.
+
+---
+
+## Resources
+
+- **Swiss Ephemeris:** https://www.astro.com/swisseph/
 - **npm Package:** https://www.npmjs.com/package/swisseph
+- **LICENSING.md** - License terms and commercial use
+- **QUICKSTART.md** - 5-minute setup guide
+- **ARCHITECTURE.md** - Technical design
 
 ---
 
-## 🤝 Want to Contribute?
+## Contributing
 
-**This is an open-source project!**
+We welcome contributions! The system is well-structured for adding:
 
-You're free to:
-- Fork and modify for your needs
-- Submit pull requests
-- Add features
-- Improve documentation
-- Report bugs
-- Share improvements
-
-We'd love to see:
-- Complete Swiss Ephemeris integration examples
 - Additional house systems
 - Aspect calculations
-- Transit calculations
+- Transit interpretations
+- Progression calculations
 - Better test coverage
 
-**Open an issue or PR on GitHub to contribute!**
+See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ---
 
-## 📄 License Note
-
-**Swiss Ephemeris Licensing:**
-- **AGPL/GPL:** Free for open-source projects
-- **Commercial License:** Required for closed-source commercial use
-
-See https://www.astro.com/swisseph/swephinfo_e.htm for details.
-
----
-
-**Questions? Open an issue on GitHub!**
+**Ready to get started? Follow [QUICKSTART.md](QUICKSTART.md) for a 5-minute setup.**

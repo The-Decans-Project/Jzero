@@ -19,19 +19,19 @@ This is **infrastructure code** for astrology apps - the boring but necessary st
 
 ### ✅ Working Components
 
-1. **Time Systems** (`src/julianDay.js`, `src/time-corrections.js`)
+1. **Time Systems** (`astrology/core/julianDay.js`, `astrology/core/time-corrections.js`)
    - Julian Day conversions
    - J2000.0 reference epoch (JD 2451545.0)
    - ΔT correction (TT-UTC)
    - Timezone handling
    - DST support
 
-2. **House Systems** (`src/houses.js`)
+2. **House Systems** (`astrology/core/houses.js`)
    - Porphyry (quadrant trisection)
    - Whole Sign (ancient method)
    - Equal House (30° divisions)
 
-3. **Chart Angles** (`src/houses.js`)
+3. **Chart Angles** (`astrology/core/houses.js`)
    - Ascendant (ASC)
    - Midheaven (MC)
    - Descendant (DSC)
@@ -80,8 +80,8 @@ python3 -m http.server 8000
 ### Basic Usage
 
 ```javascript
-import { dateToJulianDayTT } from './src/julianDay.js';
-import { calculateHouses } from './src/houses.js';
+import { dateToJulianDayTT } from './astrology/core/julianDay.js';
+import { calculateHouses } from './astrology/calculations/houses.js';
 
 // Calculate Julian Day with time corrections
 const jdData = dateToJulianDayTT(2000, 1, 1, 12, 0, 0);

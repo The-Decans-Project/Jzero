@@ -1,0 +1,562 @@
+/* Transits Viewer Styles */
+
+.transits-viewer {
+  padding: 1.5rem 0;
+}
+
+.transits-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #222;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.transits-timestamp {
+  font-size: 0.85rem;
+  color: #999;
+  display: block;
+  margin-top: 0.25rem;
+  font-weight: normal;
+}
+
+/* Summary Cards */
+.transits-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.summary-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+}
+
+.summary-card h4 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  opacity: 0.9;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.5rem;
+}
+
+.summary-card .number {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.summary-card .label {
+  font-size: 0.85rem;
+  opacity: 0.8;
+}
+
+/* Transit Cards Container */
+.transits-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.transit-card {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.transit-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-color: #667eea;
+  transform: translateY(-2px);
+}
+
+/* Planet Header */
+.transit-planet-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.transit-planet-symbol {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.transit-planet-info h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #222;
+  font-weight: 600;
+}
+
+.transit-planet-info small {
+  color: #999;
+  font-size: 0.85rem;
+  display: block;
+  margin-top: 0.2rem;
+}
+
+/* Position Data */
+.transit-positions {
+  margin-bottom: 1.5rem;
+}
+
+.position-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.position-item h4 {
+  font-size: 0.85rem;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.position-value {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+  font-family: 'Courier New', monospace;
+}
+
+.position-degree {
+  font-size: 0.9rem;
+  color: #667eea;
+  margin-left: 0.25rem;
+}
+
+.position-sign {
+  display: inline-block;
+  background: #f5f5f5;
+  padding: 0.2rem 0.5rem;
+  border-radius: 3px;
+  font-size: 0.85rem;
+  margin-left: 0.5rem;
+  font-weight: 600;
+  color: #667eea;
+}
+
+/* Current vs Birth */
+.position-label {
+  font-weight: 600;
+  color: #222;
+  font-size: 0.9rem;
+}
+
+.position-subtitle {
+  color: #999;
+  font-size: 0.8rem;
+}
+
+/* Difference Indicator */
+.position-difference {
+  background: #f0f8ff;
+  border-left: 3px solid #667eea;
+  padding: 0.75rem;
+  border-radius: 4px;
+  margin-top: 0.75rem;
+}
+
+.difference-label {
+  font-size: 0.85rem;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.difference-value {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #667eea;
+  font-family: 'Courier New', monospace;
+}
+
+/* Aspect Information */
+.transit-aspect {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+  border: 1px solid rgba(102, 126, 234, 0.2);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.aspect-label {
+  font-size: 0.85rem;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.aspect-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #667eea;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.aspect-icon {
+  font-size: 1.3rem;
+}
+
+.aspect-orb {
+  font-size: 0.9rem;
+  color: #999;
+  margin-top: 0.5rem;
+}
+
+.aspect-orb strong {
+  color: #333;
+}
+
+/* Aspect Type Badges */
+.aspect-type {
+  display: inline-block;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  margin-top: 0.5rem;
+}
+
+.aspect-type.conjunction {
+  background: #d4edda;
+  color: #155724;
+}
+
+.aspect-type.sextile,
+.aspect-type.trine {
+  background: #d1ecf1;
+  color: #0c5460;
+}
+
+.aspect-type.square {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.aspect-type.opposition {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.aspect-type.quincunx {
+  background: #e7d4f5;
+  color: #5a3d6e;
+}
+
+/* Interpretation */
+.aspect-interpretation {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 1rem;
+  margin-top: 0.75rem;
+}
+
+.interpretation-title {
+  font-size: 0.85rem;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.interpretation-text {
+  font-size: 0.9rem;
+  color: #333;
+  line-height: 1.6;
+}
+
+.interpretation-text strong {
+  color: #222;
+}
+
+/* Motion Information */
+.planet-motion {
+  background: #f5f5f5;
+  border-radius: 6px;
+  padding: 0.75rem;
+  margin-top: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.motion-icon {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #667eea;
+}
+
+/* Status Indicator */
+.status-badge {
+  display: inline-block;
+  padding: 0.3rem 0.6rem;
+  border-radius: 3px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-top: 0.5rem;
+}
+
+.status-badge.active {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status-badge.weak {
+  background: #e2e3e5;
+  color: #383d41;
+}
+
+.status-badge.approaching {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.status-badge.separating {
+  background: #d1ecf1;
+  color: #0c5460;
+}
+
+/* Speed Display */
+.speed-indicator {
+  font-size: 0.85rem;
+  color: #999;
+  margin-top: 0.75rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.speed-label {
+  font-weight: 600;
+}
+
+.speed-value {
+  font-family: 'Courier New', monospace;
+  font-weight: 600;
+  color: #667eea;
+}
+
+/* List View Option */
+.transits-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.transit-list-item {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 1rem;
+  display: grid;
+  grid-template-columns: 60px 1fr auto;
+  gap: 1.5rem;
+  align-items: center;
+  transition: all 0.2s ease;
+}
+
+.transit-list-item:hover {
+  background: #f8f9fa;
+  border-color: #667eea;
+}
+
+.list-planet {
+  font-size: 2.5rem;
+  text-align: center;
+  line-height: 1;
+}
+
+.list-data {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.list-planet-name {
+  font-weight: 600;
+  color: #222;
+}
+
+.list-positions {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.list-aspect {
+  text-align: right;
+}
+
+.list-aspect-name {
+  font-weight: 600;
+  color: #667eea;
+  display: block;
+}
+
+.list-aspect-orb {
+  font-size: 0.8rem;
+  color: #999;
+}
+
+/* View Toggle */
+.transits-view-toggle {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  justify-content: flex-end;
+}
+
+.view-toggle-btn {
+  padding: 0.5rem 1rem;
+  border: 1px solid #ddd;
+  background: white;
+  color: #666;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.view-toggle-btn:hover {
+  border-color: #667eea;
+  color: #667eea;
+}
+
+.view-toggle-btn.active {
+  background: #667eea;
+  color: white;
+  border-color: #667eea;
+}
+
+/* Filter Options */
+.transits-filters {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  padding: 0.5rem 1rem;
+  border: 1px solid #ddd;
+  background: white;
+  color: #666;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.filter-btn:hover {
+  border-color: #667eea;
+  color: #667eea;
+}
+
+.filter-btn.active {
+  background: #667eea;
+  color: white;
+  border-color: #667eea;
+}
+
+/* Empty State */
+.transits-empty {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #999;
+}
+
+.empty-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.empty-message {
+  font-size: 1rem;
+  margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .transits-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .transits-summary {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .transit-card {
+    padding: 1rem;
+  }
+
+  .transit-positions {
+    margin-bottom: 1rem;
+  }
+
+  .position-row {
+    grid-template-columns: 1fr;
+    margin-bottom: 0.75rem;
+  }
+
+  .transit-planet-symbol {
+    font-size: 1.5rem;
+  }
+
+  .transit-list-item {
+    grid-template-columns: 50px 1fr;
+    gap: 1rem;
+  }
+
+  .list-aspect {
+    grid-column: 1 / -1;
+    text-align: left;
+    border-top: 1px solid #eee;
+    padding-top: 0.75rem;
+    margin-top: 0.75rem;
+  }
+
+  .list-planet {
+    font-size: 2rem;
+  }
+
+  .transits-view-toggle {
+    justify-content: center;
+  }
+
+  .transits-filters {
+    justify-content: center;
+  }
+}

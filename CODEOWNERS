@@ -1,0 +1,18 @@
+# This file documents code ownership and responsibility
+
+# Primary maintainers and creators
+*                                      @The-Decans-Project/core-team
+astrology/core/swiss-ephemeris.js      @The-Decans-Project/core-team
+astrology/core/planets.js              @The-Decans-Project/core-team
+astrology/core/julianDay.js            @The-Decans-Project/core-team
+astrology/calculations/                @The-Decans-Project/calculations-team
+astrology/utilities/                   @The-Decans-Project/utilities-team
+
+# Documentation
+*.md                                   @The-Decans-Project/documentation-team
+CONTRIBUTING.md                        @The-Decans-Project/core-team
+ARCHITECTURE.md                        @The-Decans-Project/core-team
+
+# Configuration
+package.json                           @The-Decans-Project/core-team
+.github/                               @The-Decans-Project/core-team
