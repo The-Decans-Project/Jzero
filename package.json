@@ -1,7 +1,7 @@
 {
   "name": "jzero",
   "version": "2.0.0",
-  "description": "Open-source astrology calculations. Birth charts, transits, progressions, synastry. Built with community in mind.",
+  "description": "Open-source astrology calculations. Use as JavaScript library or HTTP API. Birth charts, transits, progressions, synastry. Call from Python, Java, C#, Go, Rust, or any language.",
   "type": "module",
   "main": "astrology/index.js",
   "exports": {

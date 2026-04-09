@@ -1,13 +1,28 @@
 /**
- * Jzero API Server
+ * Jzero HTTP API Server
  * Professional-grade astrology calculation backend
  * 
+ * 🌍 Language Agnostic - Call from any programming language:
+ * - JavaScript/Node.js: fetch('http://api.jzero/...')
+ * - Python: requests.post('http://api.jzero/...')
+ * - Java: HttpClient.send(...)
+ * - C#: HttpClient.PostAsync(...)
+ * - Go: http.Post(...)
+ * - Rust: reqwest::Client::post(...)
+ * - PHP: file_get_contents(..., stream_context_create(...))
+ * 
  * Endpoints:
- * - POST /api/chart/birth-chart - Calculate full birth chart
- * - POST /api/chart/transits - Get current planetary transits
- * - POST /api/chart/synastry - Compare two charts
- * - POST /api/chart/progressions - Calculate secondary progressions
- * - GET /api/locations - Search city database
+ * - GET  /api/health                 - Health check
+ * - POST /api/chart/birth-chart      - Calculate full birth chart
+ * - POST /api/chart/transits         - Get current planetary transits
+ * - POST /api/chart/synastry         - Compare two charts
+ * - POST /api/chart/progressions     - Calculate secondary progressions
+ * - GET  /api/locations?q=term       - Search city database
+ * 
+ * Examples:
+ * @see examples/http-api-examples.md - Code examples in 10+ languages
+ * @see examples/http-api-example.js  - Running example
+ * @see SERVER_API.md                 - Full API documentation
  * 
  * @requires express
  * @requires cors
