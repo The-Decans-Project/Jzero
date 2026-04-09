@@ -1,319 +1,195 @@
 # Architecture & Technical Design
 
-This document describes the system design, module organization, and technical decisions in Jzero.
-
 ## Core Philosophy
 
 **Transparent. Modular. Accurate. Language-Agnostic.**
 
 Jzero is designed to be:
-1. **Understandable** - Each calculation is traceable to astronomical literature
-2. **Modular** - Components work independently and compose cleanly
-3. **Accurate** - Professional-grade calculations (±0.0001°-0.1° depending on component)
-4. **Maintainable** - Clear separation of concerns, minimal dependencies
-5. **Accessible** - Use from JavaScript, Python, Java, C#, Go, Rust, or any language via HTTP API
+1. **Understandable** — Each calculation is traceable to its source
+2. **Modular** — Components work independently and compose cleanly
+3. **Accurate** — Swiss Ephemeris for primary calculations (±0.0001°), CSV interpolation as fallback
+4. **Maintainable** — Clear separation of concerns, minimal dependencies
+5. **Accessible** — Use from JavaScript directly, or from any language via HTTP API
 
 ## System Architecture
 
 ```
 ┌─────────────────────────────────────────────────┐
 │           Application Layer                     │
-│  (Web UI, API, CLI tools, integrations)        │
+│  (Web UI, API, CLI tools, integrations)         │
 └────────────────────┬────────────────────────────┘
                      │
 ┌────────────────────┴────────────────────────────┐
 │         High-Level Calculations                 │
-│  (Birth charts, transits, progressions)         │
-├──────────────┬──────────────┬──────────────┐
-│              │              │              │
-└──────────────┴──────────────┴──────────────┘
-  astrology/calculations/           
-├── transits.js        → Transit interpretation
-├── progressions.js    → Secondary progressions  
-├── synastry.js        → Synastry analysis
-└── houses.js          → House system selection
+│  astrology/calculations/                        │
+│  ├── transits.js       Transit interpretation   │
+│  ├── progressions.js   Secondary progressions   │
+│  ├── synastry.js       Chart comparison         │
+│  └── houses.js         House system selection   │
+└────────────────────┬────────────────────────────┘
                      │
 ┌────────────────────┴────────────────────────────┐
 │         Core Calculations                       │
-│  (Fundamental astronomical algorithms)          │
-├─────────────────┬──────────────┬───────────────┐
-│                 │              │               │
-└─────────────────┴──────────────┴───────────────┘
-  astrology/core/
-├── julianDay.js         → Time system (UT, TT, LST)
-├── planets.js           → Swiss Ephemeris planetary positions
-├── houses.js            → House systems (Placidus, etc.)
-├── ephemeris.js         → CSV data interpolation
-├── time-corrections.js  → ΔT, DST handling
-└── calculator.js        → Aggregator
+│  astrology/core/                                │
+│  ├── swiss-ephemeris.js  Primary accuracy       │
+│  ├── ephemeris.js        CSV fallback           │
+│  ├── planets.js          Planetary positions    │
+│  ├── houses.js           House systems          │
+│  ├── julianDay.js        Time conversions       │
+│  ├── time-corrections.js ΔT, DST               │
+│  └── calculator.js       Birth chart aggregator │
+└────────────────────┬────────────────────────────┘
                      │
 ┌────────────────────┴────────────────────────────┐
 │         Utilities                               │
-│  (Helper functions and data)                    │
-├──────────────┬──────────────┬──────────────┐
-│              │              │              │
-└──────────────┴──────────────┴──────────────┘
-  astrology/utilities/
-├── geolocation.js       → City database, timezones
-├── chart-database.js    → Chart storage/retrieval
-└── time-utils.js        → Timezone helpers
+│  astrology/utilities/                           │
+│  ├── geolocation.js    City database            │
+│  └── chart-database.js Chart storage            │
+└─────────────────────────────────────────────────┘
 ```
 
 ## Module Responsibilities
 
-### Core Calculations Layer (`astrology/core/`)
+### `astrology/core/`
 
-#### 1. **julianDay.js** — Temporal Reference System
-**Purpose**: Convert between calendar dates and Julian Day numbers with astronomical corrections.
+#### `swiss-ephemeris.js` — Primary Accuracy
+Swiss Ephemeris wrapper for professional-grade planetary positions.
+- Accuracy: ±0.0001°
+- Valid range: 1900–2100
+- Used when the `swisseph` npm package is available
 
-**Key Functions**:
-- `dateToJulianDayTT(year, month, day, hour, minute, second)` → Terrestrial Time JD
+#### `ephemeris.js` — CSV Fallback
+CSV-based planetary position lookup with linear interpolation.
+- Accuracy: ±0.1°
+- Coverage: 1950–2050
+- Used automatically when Swiss Ephemeris is not available
+
+#### `julianDay.js` — Time Reference System
+Converts between calendar dates and Julian Day numbers.
+- `dateToJulianDayTT(year, month, day, hour, minute, second)` → JD_TT
 - `calculateDeltaT(jd)` → ΔT correction (UTC → TT)
 - `calculateLST(jd, longitude)` → Local Sidereal Time
+- ΔT polynomial from NASA (±0.1 second accuracy)
 
-**Technical Details**:
-- Uses J2000.0 as reference epoch (JD 2451545.0)
-- Implements ΔT polynomial from NASA (accurate to ~0.1 second)
-- Handles leap seconds and historical calendar changes
-
-**Why This Matters**: All astronomical calculations depend on precise time. Small errors here propagate through all other calculations.
-
-#### 2. **planets.js** — Planetary Positions  
-**Purpose**: Calculate planetary geocentric ecliptic coordinates.
-
-**Algorithm**: Swiss Ephemeris
-- Professional-grade accuracy: ±0.0001°
-- Valid from 1900 to 2100
-- Provides direct geocentric coordinates
-
-**Key Functions**:
+#### `planets.js` — Planetary Positions
+Geocentric ecliptic coordinates for all 10 bodies via Swiss Ephemeris.
 - `calculatePlanetPosition(planet, jd)` → {longitude, latitude, distance}
-- Covers: Sun ☉, Moon ☾, Mercury ☿, Venus ♀, Mars ♂, Jupiter ♃, Saturn ♄, Uranus ♅, Neptune ♆, Pluto ♇
+- `calculateAllPlanets(jd)` → all planets at once
+- `longitudeToZodiac(longitude)` → sign + degree
 
-**Implementation Strategy**:
-- Meeus' "Astronomical Algorithms" polynomial coefficients
-- Terrestrial Time (TT) input for consistency
-- Returns ecliptic coordinates for astrology conventions
+#### `houses.js` — House Systems
+Calculates zodiac house divisions.
+- Placidus (default) — time-above-horizon method
+- Porphyry — quadrant trisection
+- Whole Sign — 30° sign divisions
+- Equal House — 30° divisions from Ascendant
 
-#### 3. **houses.js** — House Systems & Cusps
-**Purpose**: Calculate zodiac divisions and interpretive framework.
+#### `time-corrections.js` — Time Conversions
+- ΔT (Dynamic Time vs UTC)
+- DST detection
+- UTC/TT conversion
 
-**Supported Systems**:
-1. **Placidus** - Divides zodiac by time above horizon (standard Western astrology)
-2. **Porphyry** - Quadrant trisection (ancient method)
-3. **Whole Sign** - 30° sign divisions (modern revival)
-4. **Equal House** - 30° divisions from Ascendant
+#### `calculator.js` — Birth Chart Aggregator
+Orchestrates a complete birth chart: Julian Day → planets → houses → angles.
 
-**Algorithm**: Placidus (most complex)
-- Given LST and latitude, find ecliptic degree at each hour above horizon
-- Requires iterative solving (Meeus Chapter 13)
-- Output: 12 house cusps in ecliptic longitude
+### `astrology/calculations/`
 
-**Application**: House placement determines life area interpretation in birth charts.
+#### `transits.js`
+Current planet positions vs. natal chart. Returns aspects and interpretation.
 
-#### 4. **time-corrections.js** — Time System Conversions
-**Purpose**: Handle timezone, daylight saving, and historical time variations.
+#### `progressions.js`
+- `calculateSecondaryProgression(natalChart, years)` — 1 day = 1 year
+- `calculateSolarArc(natalChart, years)`
+- `calculateTertiaryProgression(natalChart, months)`
+- `calculateSolarReturn(natalChart, year)`
 
-**Key Corrections**:
-- ΔT (Delta T) — Dynamic Time vs UTC offset
-- DST rules — Historical DST transitions
-- Timezone offsets — Geographic + historical
-- Calendar transitions — Julian to Gregorian
+#### `synastry.js`
+- `calculateSynastry(chart1, chart2)` — inter-aspects, composite, compatibility scores
+- `calculateCompositeChart(chart1, chart2)` — midpoint chart
+- `findRelationshipThemes(synastry)` — key relationship patterns
 
-**Why Complex**: Different countries adopted Gregorian calendar at different times; historic DST rules vary.
+#### `houses.js`
+House system selector that delegates to the appropriate algorithm in core.
 
-#### 5. **ephemeris.js** — Data Interpolation
-**Purpose**: Load and interpolate high-resolution positional data.
+### `astrology/utilities/`
 
-**Data Sources**:
-- CSV format: JD, planetary positions, date
-- Coverage: 1950-2050 (100 years of data)
-- Resolution: Daily for Sun/inner planets, 2-day for outer
+#### `geolocation.js`
+~100 major cities with coordinates and IANA timezone names.
+- `searchCities(query)` — partial name match
+- `findClosestCity(lat, lon)` — nearest city by coordinates
+- `getCityByName(name)` — exact name lookup
 
-**Interpolation Method**:
-- Linear interpolation between known points
-- Lagrange polynomial for smoother curves (optional upgrade)
-- Matches CSV accuracy ±0.01° for intermediate dates
+#### `chart-database.js`
+In-memory CRUD for calculated charts (save, load, search, delete).
 
-### Calculation Layers (`astrology/calculations/`)
+---
 
-#### **transits.js** — Current Planetary Positions
-Returns where planets are *now* for transit interpretations.
-
-```javascript
-const currentPlanetPositions = getTransits(Date.now());
-// Used for: "Jupiter is transiting my 7th house—relationships"
-```
-
-#### **progressions.js** — Secondary Progressions
-Advance birth chart at 1 day/year rate for analyzing development.
-
-```javascript
-const progressedChart = calculateSecondaryProgressions(birthJD, currentDate);
-// Used for: "My progressed Moon entered Scorpio—time for intensity"
-```
-
-#### **synastry.js** — Composite Charts & Compatibility
-Compare two charts for relationship dynamics.
-
-```javascript
-const synastry = calculateSynastry(chartA, chartB);
-// Returns: overlays, composites, aspect connections
-```
-
-### Utility Layer (`astrology/utilities/`)
-
-#### **geolocation.js** — Location Database
-~100 cities with coordinates and timezone rules.
-
-```javascript
-const location = getLocation("New York");
-// Returns: { lat: 40.7128, lon: -74.0060, timezone: "America/New_York" }
-```
-
-#### **chart-database.js** — Data Persistence
-Stores and retrieves calculated charts for reanalysis.
-
-## Data Flow: Birth Chart Calculation
+## Data Flow: Birth Chart
 
 ```
 Input: { year, month, day, hour, minute, location }
    │
-   ├─→ dateToJulianDayTT() ────→ Temporal reference (JD_TT)
+   ├─→ dateToJulianDayTT()        → JD_TT (Terrestrial Time)
+   ├─→ getLocation() / coordinates → { lat, lon, timezone }
+   ├─→ getAllPlanetPositions(jd)   → planetary longitudes/signs
+   ├─→ getHouses(jd, lat, lon)    → 12 house cusps + angles
    │
-   ├─→ getLocation() ────────────→ { lat, lon, timezone }
-   │
-   ├─→ calculatePlanetPosition() → Planetary positions per sign
-   │
-   ├─→ calculateHouses() ────────→ Zodiac divisions (12 houses)
-   │
-   └─→ Chart Object:
-       {
-         timestamp: { jd, deltaT },
-         location: { lat, lon, timezone },
-         planets: { Sun, Moon, Mercury, ... },
-         houses: { ... },
-         angles: { Ascendant, MC, Descendant, IC }
-       }
+   └─→ Chart: { jd, planets, houses, angles }
 ```
 
-## Accuracy Tiers
+---
 
-| Component | Accuracy | Source | Use Case |
-|-----------|----------|--------|----------|
-| **Julian Day** | ±0.001 sec | ΔT polynomial | Professional |
-| **Planetary positions** | ±0.1° | VSOP87 | Astrology standard |
-| **House cusps** | ±0.01° | Placidus algorithm | Professional |
-| **Moon positions** | ±0.1° | VSOP87 + Meeus | Standard |
-| **Time zones** | ±0 min | Database | Exact |
+## Accuracy
+
+| Component | Accuracy | Source |
+|-----------|----------|--------|
+| Julian Day | ±0.001 sec | NASA ΔT polynomial |
+| Planetary positions | ±0.0001° | Swiss Ephemeris |
+| CSV fallback | ±0.1° | Interpolation |
+| House cusps | ±0.01° | Placidus algorithm |
+| Time zones | Exact | IANA database |
+
+---
 
 ## Design Decisions
 
-### 1. **ES6 Modules Over CommonJS**
+### ES6 Modules over CommonJS
 - Cleaner import/export syntax
-- Tree-shaking support for smaller bundles
+- Tree-shaking support
 - Future-proof (ES standard)
 
-### 2. **Functional Over Object-Oriented**
+### Functional over Object-Oriented
 - Pure functions with no side effects
 - Easier to test and reason about
 - Composable calculations
 
-### 3. **Swiss Ephemeris Integration**
-- Pure algorithmic (no binary dependencies)
-- Transparent source (published literature)
-- MIT-compatible (no license restrictions)
-- Trade-off: Slightly lower accuracy for planets beyond Saturn
+### Swiss Ephemeris as Primary, CSV as Fallback
+- Swiss Ephemeris: ±0.0001° accuracy, professional standard
+- CSV fallback: works without native dependencies, ±0.1° accuracy
+- The system detects availability and uses the best option automatically
 
-### 4. **CSV Data + Interpolation Over Full Database**
-- Smaller memory footprint
-- Platform-independent (text format)
-- Can be extended to full ephemeris data
-- Allows both data-driven and algorithmic approaches
-
-### 5. **Terrestrial Time (TT) as Internal Standard**
+### Terrestrial Time (TT) as Internal Standard
 - Consistent across all calculations
 - Handles relativistic corrections automatically
 - Matches astronomical literature conventions
-- Conversion to UTC handled at boundaries
-
-## Performance Considerations
-
-### Calculation Performance
-```javascript
-// Single calculation: ~1-5ms
-const pos = calculatePlanetPosition('Moon', jd);
-
-// Full birth chart: ~20-50ms
-const chart = calculateBirthChart(jdData, lat, lon);
-
-// Large analysis (100 years of transits): ~500-1000ms
-```
-
-### Memory
-- Core module (no data): ~50KB minified
-- With ephemeris CSVs: ~2MB
-- Browser: Loads on demand for smaller footprint
-
-### Optimization Opportunities
-- Cache frequently calculated positions
-- Parallelize multi-planet calculations
-- Pre-compute house cusps for common latitudes
-- Use Simd.js for vectorized calculations
-
-## Extension Points
-
-### Adding a New House System
-1. Add calculation function to `houses.js`
-2. Export from `astrology/index.js`  
-3. Update house selection in calculations
-
-### Adding a New Planet
-1. Swiss Ephemeris is configured in `planets.js`
-2. Extend `calculatePlanetPosition()` switch statement
-3. Update type definitions and documentation
-
-### Integrating Swiss Ephemeris
-1. Wrapper module: `astrology/core/swiss-ephemeris.js`
-2. Conditional import based on environment
-3. Swiss Ephemeris provides primary accuracy
-
-**⚠️ Licensing Note**: Swiss Ephemeris is NOT MIT licensed. Commercial use requires a separate license. See [LICENSING.md](LICENSING.md) for details.
-
-## Testing Strategy
-
-### Unit Tests
-- Individual function accuracy against reference data
-- Edge cases (poles, date line, extreme dates)
-- Time zone transitions and DST
-
-### Integration Tests
-- Full birth chart calculations
-- Compare against known software (Swiss Ephemeris, etc.)
-- Chart examples with historical accuracy verification
-
-### Accuracy Tests
-- Known planetary positions from NASA JPL
-- Historical birth times from biographical records
-- Regress for consistency across versions
-
-## Future Architecture
-
-### Phase 1 (Current)
-- Core calculations solidified
-- Modular house systems
-- Community contributions welcome
-
-### Phase 2
-- Advanced calculations (aspects, asteroid positions)
-- UI/visualization layer
-- API server for web integration
-
-### Phase 3
-- Professional accuracy (Swiss Ephemeris integration)
-- Database expansion (10,000+ cities)
-- Performance optimization
 
 ---
 
-**Questions about the architecture?** Open a discussion in GitHub Discussions.
+## Extending Jzero
+
+### Add a House System
+1. Add calculation to `astrology/core/houses.js`
+2. Export from `astrology/index.js`
+
+### Add a Planet or Asteroid
+1. Extend `calculatePlanetPosition()` in `astrology/core/planets.js`
+2. Swiss Ephemeris supports asteroids, Chiron, lunar nodes
+
+### Add an API Endpoint
+1. Add route to `server/api.js`
+2. Call calculation functions from `astrology/index.js`
+3. See [SERVER_API.md](SERVER_API.md) for response format conventions
+
+---
+
+**Questions?** Open a discussion on [GitHub Discussions](https://github.com/The-Decans-Project/Jzero/discussions).

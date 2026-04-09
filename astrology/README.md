@@ -1,215 +1,49 @@
-# Jzero Astrology Framework
+# Jzero Astrology Module
 
-A comprehensive JavaScript framework providing all the essential building blocks for astrology applications, designed so developers can build upon it rather than being a complete software solution.
+Core calculation library for Jzero. Handles all astronomical math — planetary positions, house systems, transits, synastry, and progressions.
 
-## 🎯 What This Framework Provides
-
-This framework gives you the core calculations, data structures, and utilities needed to build astrology applications. It's intentionally designed as a "starter kit" that handles the complex astronomical calculations while leaving the UI, integration, and final application development to you.
-
-### Core Features
-
-- **Ephemeris Calculations**: Basic planetary position calculations (replace with Swiss Ephemeris for production)
-- **House Systems**: Equal, Porphyry, Whole Sign, and basic Placidus implementations
-- **Transits**: Current planetary positions and transit aspects
-- **Synastry**: Chart comparison for relationships with compatibility scoring
-- **Progressions**: Secondary progressions, solar arc directions, and solar returns
-- **Time Utilities**: Julian days, sidereal time, timezone conversions
-- **Location Database**: City lookup with coordinates and timezones
-- **Chart Database**: Basic CRUD operations for chart storage
-- **Report System**: Extensible reporting framework
-
-## 🚀 Quick Start
-
-1. **Open the project** in your development environment
-2. **Open `index.html`** in your browser to see the demo
-3. **Extend the modules** with your own calculations and UI
-
-## 📁 Project Structure
+## Structure
 
 ```
 astrology/
-├── calculations/          # Core calculation modules
-│   ├── ephemeris.js      # Planetary position calculations
-│   ├── house-systems.js  # House cusp calculations
-│   ├── transits.js       # Current planetary positions
-│   ├── synastry.js       # Chart comparison
-│   └── progressions.js   # Predictive techniques
-├── utilities/            # Helper utilities
-│   ├── time-utils.js     # Date/time conversions
-│   ├── location-database.js # City/coordinates lookup
-│   └── chart-database.js # Chart storage operations
-├── controllers/          # MVC controllers
-├── models/              # Data models
-├── sample-data/         # Example charts
-└── index.html           # Demo page
+├── core/                    # Fundamental calculations
+│   ├── calculator.js        # Birth chart aggregator
+│   ├── swiss-ephemeris.js   # Swiss Ephemeris wrapper (primary accuracy)
+│   ├── ephemeris.js         # CSV data interpolation (fallback)
+│   ├── planets.js           # Planetary position calculations
+│   ├── houses.js            # House system calculations
+│   ├── julianDay.js         # Julian Day & time system conversions
+│   ├── time-corrections.js  # ΔT, DST, timezone handling
+│   ├── errors.js            # Custom error classes
+│   ├── validator.js         # Input validation
+│   ├── logger.js            # Structured logging
+│   └── config.js            # Configuration management
+├── calculations/            # Higher-level astrological techniques
+│   ├── houses.js            # House system selection
+│   ├── transits.js          # Current & future transits
+│   ├── synastry.js          # Chart comparison & compatibility
+│   └── progressions.js      # Secondary progressions, solar arcs, returns
+├── utilities/               # Helpers
+│   ├── geolocation.js       # City database (~100 cities) + coordinate tools
+│   └── chart-database.js    # In-memory chart storage
+└── index.js                 # Re-exports everything
 ```
 
-## 💡 How to Use
+## Accuracy
 
-### Calculate a Natal Chart
+Calculations use **Swiss Ephemeris** as the primary source (±0.0001°). A CSV interpolation fallback is included for environments where Swiss Ephemeris is unavailable (±0.1°).
+
+## Usage
 
 ```javascript
-// Create a chart object
-var chart = new Chart({
-    name: 'John Doe',
-    birthdate: '1990-05-15T14:30:00Z',
-    location: 'New York, USA'
-});
+import { calculateBirthChart } from './core/calculator.js';
+import { getAllPlanetPositions, getHouses } from './core/swiss-ephemeris.js';
+import { calculateSynastry } from './calculations/synastry.js';
+import { calculateSecondaryProgression } from './calculations/progressions.js';
+import { searchCities } from './utilities/geolocation.js';
 
-// Calculate planetary positions (implement your own ephemeris)
-chart[Sun] = { longitude: 245.5, sign: Taurus, degree: 25, minutes: 30 };
-chart[Moon] = { longitude: 120.3, sign: Virgo, degree: 15, minutes: 20 };
-// ... add other planets
-
-// Calculate aspects
-var aspects = chart.getAllAspects();
+// Or import everything at once
+import { calculateBirthChart, longitudeToZodiac, searchCities } from './index.js';
 ```
 
-### Calculate Transits
-
-```javascript
-// Get current transits for a natal chart
-var natalChart = ChartController.getAllCharts()[0];
-var transits = Transits.calculateTransits(natalChart, new Date());
-
-// Find upcoming significant transits
-var upcoming = Transits.findUpcomingTransits(natalChart, 30); // Next 30 days
-```
-
-### Synastry Analysis
-
-```javascript
-// Compare two charts for relationships
-var synastry = Synastry.calculateSynastry(chart1, chart2);
-
-console.log('Compatibility score:', synastry.scores.overall);
-console.log('Relationship themes:', synastry.findRelationshipThemes(synastry));
-```
-
-### Progressions
-
-```javascript
-// Calculate secondary progression
-var progressed = Progressions.calculateSecondaryProgression(natalChart, 25);
-
-// Calculate solar return
-var solarReturn = Progressions.calculateSolarReturn(natalChart, 2024);
-```
-
-## 🔧 Extending the Framework
-
-### Replace Ephemeris Calculations
-
-The included ephemeris calculations are simplified approximations. For production use:
-
-1. **Swiss Ephemeris**: Use the professional astronomical library
-2. **Web APIs**: Integrate with astrology API services
-3. **Custom Calculations**: Implement your own astronomical algorithms
-
-### Add More House Systems
-
-Extend `house-systems.js` with additional systems:
-
-```javascript
-HouseSystems.kampanus = function(ascendant, midheaven, latitude) {
-    // Implement Kampanus house system
-    // ...
-};
-```
-
-### Database Integration
-
-Replace the in-memory chart database with a real database:
-
-```javascript
-// Extend ChartDatabase to use localStorage, IndexedDB, or server API
-ChartDatabase.saveChart = function(chart) {
-    // Your database implementation
-};
-```
-
-### Add UI Components
-
-Create chart wheels, aspect grids, and interactive displays:
-
-```javascript
-// Example: Chart wheel rendering
-function drawChartWheel(chart, canvas) {
-    // Implement SVG/Canvas chart wheel
-}
-```
-
-## 📚 Key Modules Explained
-
-### Ephemeris (`calculations/ephemeris.js`)
-- Basic planetary position calculations
-- Moon phase calculations
-- Framework for astronomical accuracy
-
-### House Systems (`calculations/house-systems.js`)
-- Multiple house system implementations
-- House ruler calculations
-- Planet-to-house assignments
-
-### Transits (`calculations/transits.js`)
-- Current planetary positions
-- Transit aspect calculations
-- Void-of-course Moon detection
-
-### Synastry (`calculations/synastry.js`)
-- Inter-chart aspect analysis
-- Composite chart calculations
-- Relationship compatibility scoring
-
-### Progressions (`calculations/progressions.js`)
-- Secondary progressions
-- Solar arc directions
-- Solar and lunar returns
-
-### Time Utils (`utilities/time-utils.js`)
-- Julian day calculations
-- Timezone conversions
-- Sidereal time calculations
-
-### Location Database (`utilities/location-database.js`)
-- City coordinate lookup
-- Timezone information
-- Geographic distance calculations
-
-## 🎯 Development Philosophy
-
-This framework follows the principle of "just enough, but not too much":
-
-- ✅ Provides core astronomical calculations
-- ✅ Includes essential astrology data structures
-- ✅ Offers extensible architecture
-- ✅ Leaves UI and application logic to developers
-- ❌ Is not a complete astrology software
-- ❌ Does not include user interfaces
-- ❌ Does not handle all edge cases
-
-## 📖 Learning Resources
-
-- [Swiss Ephemeris](https://www.astro.com/swisseph/) - Professional astronomical calculations
-- [Astrology APIs](https://www.astrology-api.com/) - Web service alternatives
-- [Open Source Astrology](https://github.com/topics/astrology) - Community projects
-- [Astronomical Algorithms](https://www.willbell.com/math/) - Technical references
-
-## 🤝 Contributing
-
-This is a starter framework designed to be extended. Consider:
-
-1. Adding more house systems
-2. Implementing additional asteroids
-3. Creating fixed star calculations
-4. Adding more predictive techniques
-5. Building UI components
-6. Integrating with databases
-
-## 📄 License
-
-MIT License - See LICENSE file in the root directory.
-
----
-
-**Remember**: This framework provides the building blocks. The artistry of astrology interpretation and the user experience are yours to create!
+See the [examples/](../examples/) directory for working code.
