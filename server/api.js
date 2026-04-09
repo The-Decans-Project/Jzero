@@ -42,7 +42,9 @@ import {
   getHouses,
   getPlanetPosition,
   getAllPlanetPositions,
-  longitudeToZodiac
+  longitudeToZodiac,
+  calculateSynastry,
+  searchCities
 } from '../astrology/index.js';
 
 // Setup
@@ -249,18 +251,7 @@ app.get('/api/locations', (req, res) => {
       });
     }
 
-    // TODO: Implement city search from geolocation database
-    // For now, return example
-    const cities = [
-      { name: 'New York', lat: 40.7128, lon: -74.0060, timezone: 'America/New_York' },
-      { name: 'Los Angeles', lat: 34.0522, lon: -118.2437, timezone: 'America/Los_Angeles' },
-      { name: 'London', lat: 51.5074, lon: -0.1278, timezone: 'Europe/London' }
-    ];
-
-    const results = cities.filter(c =>
-      c.name.toLowerCase().includes(search.toLowerCase())
-    );
-
+    const results = searchCities(search);
     res.json({ results, total: results.length });
   } catch (error) {
     console.error('Location search error:', error);
@@ -282,10 +273,27 @@ app.post('/api/chart/synastry', (req, res) => {
       });
     }
 
-    // TODO: Implement synastry calculations
+    // Parse both charts
+    const parseChart = (chartData) => {
+      const [year, month, day] = chartData.date.split('-').map(Number);
+      const [hour, minute, second] = (chartData.time || '00:00:00').split(':').map(Number);
+      const jdData = dateToJulianDayTT(year, month, day, hour, minute, second || 0);
+      const planets = getAllPlanetPositions(jdData.jd_tt);
+      return { jd: jdData.jd_tt, ...planets };
+    };
+
+    const planets1 = parseChart(chart1);
+    const planets2 = parseChart(chart2);
+    const synastry = calculateSynastry(planets1, planets2);
+
     res.json({
-      status: 'coming_soon',
-      message: 'Synastry analysis will be available in next release'
+      chart1: { date: chart1.date, time: chart1.time },
+      chart2: { date: chart2.date, time: chart2.time },
+      interAspects: synastry.interAspects,
+      composite: synastry.composite,
+      scores: synastry.scores,
+      summary: synastry.summary,
+      accuracy: '±0.0001° (Swiss Ephemeris)'
     });
   } catch (error) {
     console.error('Synastry error:', error);
