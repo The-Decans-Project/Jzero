@@ -1,8 +1,6 @@
-# Jzero: Getting Started for Developers
+# Jzero: Getting Started
 
-**Version**: 2.0.0 Professional Edition  
-**Status**: ✅ Production Ready  
-**Perfect For**: Building astrology applications on a solid, professional foundation
+Accurate astrology calculations, open source, free to use. Here's how to get running.
 
 ---
 

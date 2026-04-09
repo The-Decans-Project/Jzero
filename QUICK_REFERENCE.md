@@ -1,4 +1,4 @@
-# Jzero Professional System - Quick Reference
+# Jzero Quick Reference
 
 ## 🚀 Getting Started (30 seconds)
 
