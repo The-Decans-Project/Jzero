@@ -17,7 +17,33 @@ npm install
 node examples/simple-chart.js
 ```
 
-For Swiss Ephemeris integration, see [SWISS_EPHEMERIS.md](SWISS_EPHEMERIS.md).
+For Swiss Ephemeris integration, see [SWISS_EPHEMERIS_SETUP.md](SWISS_EPHEMERIS_SETUP.md).
+
+## 🎯 Use In Your Stack
+
+Jzero is **language and framework agnostic**. Choose your approach:
+
+### Option 1: Direct Integration (JavaScript/Node.js)
+Use Jzero as a library in Node.js apps:
+```javascript
+import { calculateBirthChart } from 'jzero';
+const chart = calculateBirthChart({year: 2000, month: 1, day: 1, ...});
+```
+
+### Option 2: HTTP API (Any Language)
+Run Jzero as a server, call it from anywhere:
+```bash
+npm run dev              # Starts API on localhost:3001
+```
+Then from **Python, Java, C#, Go, Rust, etc.**:
+```python
+import requests
+response = requests.get('http://localhost:3001/api/birth-chart', 
+  params={...})
+```
+
+### Option 3: Build Your Own
+Fork Jzero and port it to your language of choice. It's MIT licensed.
 
 ## What It Does
 

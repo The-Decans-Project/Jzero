@@ -4,13 +4,14 @@ This document describes the system design, module organization, and technical de
 
 ## Core Philosophy
 
-**Transparent. Modular. Accurate.**
+**Transparent. Modular. Accurate. Language-Agnostic.**
 
 Jzero is designed to be:
 1. **Understandable** - Each calculation is traceable to astronomical literature
 2. **Modular** - Components work independently and compose cleanly
-3. **Accurate** - Professional-grade calculations (±0.1°-1° depending on component)
+3. **Accurate** - Professional-grade calculations (±0.0001°-0.1° depending on component)
 4. **Maintainable** - Clear separation of concerns, minimal dependencies
+5. **Accessible** - Use from JavaScript, Python, Java, C#, Go, Rust, or any language via HTTP API
 
 ## System Architecture
 

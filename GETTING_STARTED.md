@@ -6,6 +6,20 @@
 
 ---
 
+## 🎯 Choose Your Integration Path
+
+Jzero works with **any programming language and framework**:
+
+| Approach | For You If | Setup Time |
+|----------|-----------|-----------|
+| **Node.js Library** | Using JavaScript/TypeScript on backend | 5 min |
+| **HTTP API** | Using Python, Java, C#, Go, Rust, PHP, etc. | 10 min |
+| **Self-Hosted API** | Want to run astrology calc engine separately | 15 min |
+
+Choose the path that fits your stack best. All three give you the same accurate calculations.
+
+---
+
 ## 🚀 5-Minute Setup
 
 ```bash
@@ -341,7 +355,81 @@ A: Currently in-memory (`astrology/utilities/chart-database.js`). Configure SQLi
 
 ---
 
-## 🎓 Learning Resources
+## � Integration Examples (Any Language)
+
+Once your Jzero server is running (`npm run dev`), you can call it from any language.
+
+### Python
+```python
+import requests
+
+response = requests.post('http://localhost:3001/api/birth-chart', json={
+  'year': 2000,
+  'month': 1,
+  'day': 15,
+  'hour': 14,
+  'minute': 30,
+  'latitude': 40.7128,
+  'longitude': -74.0060,
+})
+
+chart = response.json()
+print(f"Sun in {chart['sun']['zodiac']}")
+```
+
+### Java
+```java
+OkHttpClient client = new OkHttpClient();
+
+Request request = new Request.Builder()
+  .url("http://localhost:3001/api/birth-chart")
+  .post(RequestBody.create(json, MediaType.get("application/json")))
+  .build();
+
+Response response = client.newCall(request).execute();
+String result = response.body().string();
+```
+
+### C#
+```csharp
+using (var client = new HttpClient())
+{
+  var content = new StringContent(JsonConvert.SerializeObject(data), 
+    Encoding.UTF8, "application/json");
+  var response = await client.PostAsync("http://localhost:3001/api/birth-chart", content);
+  var chart = JsonConvert.DeserializeObject(await response.Content.ReadAsStringAsync());
+}
+```
+
+### Go
+```go
+data := map[string]interface{}{
+  "year": 2000,
+  "month": 1,
+  "day": 15,
+  "hour": 14,
+  "minute": 30,
+  "latitude": 40.7128,
+  "longitude": -74.0060,
+}
+jsonData, _ := json.Marshal(data)
+resp, _ := http.Post("http://localhost:3001/api/birth-chart", 
+  "application/json", bytes.NewBuffer(jsonData))
+```
+
+### Rust
+```rust
+let client = reqwest::Client::new();
+let res = client.post("http://localhost:3001/api/birth-chart")
+  .json(&chart_data)
+  .send()
+  .await?;
+let chart = res.json::<Chart>().await?;
+```
+
+---
+
+## �🎓 Learning Resources
 
 - **Astrology Theory**: Check `SERVER_API.md` for API documentation
 - **Implementation Details**: Read `IMPLEMENTATION_SUMMARY.md`

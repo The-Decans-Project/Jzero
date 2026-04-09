@@ -1,6 +1,10 @@
 # Jzero: Professional Astrology Calculation Engine
 
-A production-ready, open-source astrology calculation framework built with modern JavaScript. Provides accurate birth chart calculations, transits, progressions, synastry analysis, and more.
+A production-ready, open-source astrology calculation framework. Provides accurate birth chart calculations, transits, progressions, synastry analysis, and more.
+
+**Core**: JavaScript/Node.js  
+**API**: HTTP REST (call from any language/framework)  
+**License**: MIT (open source, free to use and modify)
 
 ## 📋 Status: Professional Production System
 
@@ -9,6 +13,7 @@ A production-ready, open-source astrology calculation framework built with moder
 ✅ **Logging**: Structured logging with multiple levels  
 ✅ **Configuration**: Environment-based configuration management  
 ✅ **API**: Express.js REST API with middleware infrastructure  
+✅ **Language Agnostic**: Use from JavaScript, Python, Java, C#, Go, Rust, etc.  
 ✅ **Documentation**: Full JSDoc and API documentation  
 
 ## 🚀 Quick Start
