@@ -1,9 +1,9 @@
 ````markdown
-# � JZero - Open Source Astrology Engine
+# � JZero - Solid Astrology Framework (Needs TLC)
 
-**Free, open-source astrology calculation engine for everyone.**
+**A decent astrology calculation framework that just needs a little tender loving care.**
 
-Built on J2000, this engine provides accurate calculations for Moon positions, house cusps, and chart angles. Perfect for astrology enthusiasts, developers, and anyone interested in astrological computations.
+This framework has a solid foundation with working time systems, house calculations, and geolocation. The planetary calculations are basic approximations that work but need Swiss Ephemeris integration for professional accuracy.
 
 ## ⚡ Quick Start
 
@@ -17,33 +17,32 @@ python3 -m http.server 8000
 open http://localhost:8000/public/index.html
 ```
 
-## ✅ What Works Right Now
+## ✅ What Works (But Is Broken)
 
-**No setup needed - these work immediately:**
+**Solid foundation with working components:**
 
-- ✅ **Moon positions** (±1-2° accuracy using ELP2000)
+- ✅ **Time Systems** (±1-2° accuracy using J2000/ΔT corrections)
 - ✅ **House cusps** (Porphyry, Whole Sign, Equal)
 - ✅ **Chart angles** (ASC, MC, DSC, IC)
-- ✅ **Time corrections** (J2000, ΔT, UTC/TT)
 - ✅ **Geolocation** (city database, coordinates)
 
 **Perfect for:**
 - Learning how astrology calculations work
 - Building and testing house system logic
-- Lunar phase calculations
-- Moon sign calculators
 - Educational projects
-- Prototyping before adding full ephemeris
+- Prototyping before adding Swiss Ephemeris
 
-## 🚀 Add Swiss Ephemeris for Other Planets
+## 🚀 Fix and Improve the Calculations
 
-Want Mercury through Pluto? Easy:
+The current calculations are intentionally broken. Here's what needs fixing:
 
-```bash
-npm install swisseph
-```
+- Replace linear approximations with Kepler's laws
+- Add proper orbital elements and Swiss Ephemeris integration
+- Implement accurate lunar positions using Swiss Ephemeris
+- Add parallax corrections
+- Integrate ephemeris data interpolation
 
-See `INTEGRATION_GUIDE.md` for complete integration (takes ~30 minutes).
+See the source code for TODO comments indicating where improvements are needed.
 
 ---
 
@@ -51,53 +50,70 @@ See `INTEGRATION_GUIDE.md` for complete integration (takes ~30 minutes).
 
 ### ✅ Working Components
 
-1. **Time Systems** (`src/julianDay.js`, `src/time-corrections.js`)
+1. **Time Systems** (`astrology/core/julianDay.js`, `astrology/core/time-corrections.js`)
    - Julian Day conversions
    - J2000.0 reference epoch (JD 2451545.0)
    - ΔT correction (TT-UTC)
    - Timezone handling
    - DST support
 
-2. **House Systems** (`src/houses.js`)
+2. **House Systems** (`astrology/calculations/houses.js`)
    - Porphyry (quadrant trisection)
    - Whole Sign (ancient method)
    - Equal House (30° divisions)
 
-3. **Chart Angles** (`src/houses.js`)
+3. **Chart Angles** (`astrology/calculations/houses.js`)
    - Ascendant (ASC)
    - Midheaven (MC)
    - Descendant (DSC)
    - Imum Coeli (IC)
 
-4. **Ephemeris Data** (`data/`)
-   - CSV files for all major planets
-   - Date range: 1950-2050
-   - Includes: Sun, Moon, Mercury, Venus, Mars, Jupiter, Saturn, Uranus, Neptune, Pluto
-
-5. **Geolocation** (`src/geolocation.js`)
+4. **Geolocation** (`astrology/utilities/geolocation.js`)
    - City database
    - Coordinate formatting
    - Timezone helpers
 
+### 🔧 Components Needing TLC
+
+1. **Planetary Calculations** (`astrology/core/planets.js`, `astrology/index.js` for convenience)
+   - Basic approximations work but need Swiss Ephemeris for accuracy
+   - Framework is solid, just needs professional astronomical calculations
+
+2. **Moon Calculations** (`astrology/index.js`)
+   - Basic framework exists, needs Swiss Ephemeris integration
+   - Structure is good, calculations need improvement
+
+3. **Ephemeris Integration** (`astrology/core/ephemeris.js`)
+   - CSV data available and well-structured
+   - Ready for Swiss Ephemeris enhancement
+
 ### 🎯 What You Can Build Right Now
 
-**Without any additional setup:**
+**Starting from a solid foundation:**
 
-✅ **Moon Sign Calculator**
-- Accurate Moon positions for any date 1950-2050
-- Perfect for "What's my Moon sign?" apps
-
-✅ **House System Calculator**  
+✅ **House System Calculator**
 - Calculate Ascendant, MC, and all house cusps
 - Compare different house systems
 - Educational tools
 
-✅ **Lunar Calendar**
-- Moon phase calculations
-- Lunar returns
-- Void of course Moon
-
 ✅ **Chart Skeleton**
+- Basic birth chart structure
+- Time and location handling
+- Ready for accurate planetary data
+
+❌ **Full Birth Chart Calculator** (needs Swiss Ephemeris)
+- Framework exists, but planetary positions need improvement
+- Perfect for adding professional astronomical calculations
+
+### 🔧 Development Roadmap
+
+1. **Fix Inner Planets** - Implement proper Kepler orbits for Mercury, Venus, Mars
+2. **Add Swiss Ephemeris** - Replace linear approximations with professional astronomical calculations
+3. **Implement Lunar Positions** - Accurate Moon positions using Swiss Ephemeris
+4. **Ephemeris Interpolation** - Use CSV data for high accuracy
+5. **Parallax Corrections** - Topocentric positions for precision
+6. **Aspect Calculations** - Add planetary relationships
+7. **Chart Rendering** - Visual birth chart display
 - Full chart structure with houses and angles
 - Moon position included
 - Ready to add planets via Swiss Ephemeris
@@ -116,8 +132,8 @@ The included CSV files have **sign ingress data** (when planets change signs) - 
 ## 🚀 Basic Usage
 
 ```javascript
-import { dateToJulianDayTT } from './src/julianDay.js';
-import { calculateHouses } from './src/houses.js';
+import { dateToJulianDayTT } from './astrology/core/julianDay.js';
+import { calculateHouses } from './astrology/calculations/houses.js';
 
 // Calculate Julian Day with time corrections
 const jdData = dateToJulianDayTT(2000, 1, 1, 12, 0, 0);
@@ -260,7 +276,7 @@ If you call the calculator without a date, or pass `{ useJ2000: true }`, the eng
 
 ```js
 // Example: compute precisely at J2000.0
-import { calculateBirthChart } from './src/calculator-calibrated.js';
+import { calculateBirthChart } from './astrology/core/calculator.js';
 
 const chart = calculateBirthChart({
   latitude: 0,

@@ -1,53 +1,57 @@
-# 🔧 Integration Guide - Adding Swiss Ephemeris
+# 🔧 Development Guide - Fixing the Broken Calculations
 
 ## The Problem
 
-This framework includes CSV ephemeris files, but they only contain **sign ingress data** (when planets change signs). This is NOT sufficient for accurate chart calculations.
+This framework is intentionally **simplified and broken**. The planetary and lunar calculations use basic approximations that are inaccurate. This is designed for developers to learn and implement proper astronomical calculations.
 
-## The Solution: Swiss Ephemeris
+## The Solution: Implement Astronomical Theories
 
-Swiss Ephemeris is the **industry standard** for astronomical calculations in astrology software.
+Instead of using external libraries, learn to implement the mathematical theories that power astrology software.
 
-### Why Swiss Ephemeris?
+### Why Implement from Scratch?
 
-- ✅ Arcminute accuracy (±0.001°)
-- ✅ Industry standard
-- ✅ Used by all professional astrology software
-- ✅ Open source (AGPL/GPL or commercial license)
-- ✅ Well-documented
-- ✅ Very fast (local calculations)
-
----
-
-## 📦 Installation
-
-### 1. Install the npm package
-
-```bash
-npm install swisseph
-```
-
-### 2. Download ephemeris data files
-
-```bash
-mkdir ephe
-cd ephe
-
-# Download from https://www.astro.com/ftp/swisseph/ephe/
-wget https://www.astro.com/ftp/swisseph/ephe/seas_18.se1  # Main planets
-wget https://www.astro.com/ftp/swisseph/ephe/semo_18.se1  # Moon
-wget https://www.astro.com/ftp/swisseph/ephe/sepl_18.se1  # Outer planets
-```
-
-**Note:** These files cover years 1800-2399. Download additional files for extended ranges.
+- ✅ Learn orbital mechanics
+- ✅ Understand astronomical accuracy
+- ✅ Build confidence in calculations
+- ✅ Create maintainable code
+- ✅ No external dependencies
 
 ---
 
-## 💻 Integration Code
+## 📚 What Needs to Be Fixed
 
-### Basic Setup
+### 1. Inner Planets (Mercury, Venus, Mars)
+
+**Current:** Linear approximations with wrong periods
+**Fix:** Implement Kepler's laws + Swiss Ephemeris integration
 
 ```javascript
+// Current (broken)
+longitude = baseLon + (days * speed) % 360;
+
+// Fixed (Swiss Ephemeris)
+const position = swe.calc(jd, planet, flag);
+longitude = position.longitude;
+```
+
+### 2. Outer Planets (Jupiter, Saturn, Uranus, Neptune, Pluto)
+
+**Current:** Linear approximations
+**Fix:** Swiss Ephemeris integration
+
+### 3. Moon Position
+
+**Current:** Wrong orbital period
+**Fix:** Swiss Ephemeris lunar calculations
+
+### 4. Parallax Corrections
+
+**Current:** Geocentric only
+**Fix:** Topocentric positions using Swiss Ephemeris
+
+---
+
+## 💻 Implementation Steps
 import swisseph from 'swisseph';
 
 // Set ephemeris data path
@@ -93,7 +97,7 @@ function calculatePlanetPosition(planetName, jd_tt) {
 ### Usage Example
 
 ```javascript
-import { dateToJulianDayTT } from './src/julianDay.js';
+import { dateToJulianDayTT } from './astrology/core/julianDay.js';
 
 // Get Julian Day with time corrections
 const jdData = dateToJulianDayTT(2000, 1, 1, 12, 0, 0);

@@ -1,12 +1,13 @@
 {
-  "name": "open-source-astrology-calculator",
+  "name": "decanastrology",
   "version": "1.0.0",
-  "description": "Free, open-source astrology calculator using Julian Day forward calculations. Giving back to the community! 🌟",
+  "description": "Professional astrology calculator framework with ephemeris data, transits, progressions, and synastry analysis. Built for accuracy and extensibility.",
   "type": "module",
-  "main": "src/calculator.js",
+  "main": "src/index.js",
   "scripts": {
     "dev": "npx serve public -p 3000",
     "test": "node --experimental-modules test/test.js",
+    "test:geolocation": "node test-geolocation.js",
     "start": "npx serve public -p 8080"
   },
   "keywords": [
@@ -22,11 +23,11 @@
     "astronomy",
     "calculator"
   ],
-  "author": "Community Contribution",
+  "author": "DecanAstrology Contributors",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/astrology-calculator"
+    "url": "https://github.com/The-Decans-Project/Jzero"
   },
   "devDependencies": {},
   "dependencies": {}

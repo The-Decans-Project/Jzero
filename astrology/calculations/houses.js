@@ -10,7 +10,7 @@ import {
   normalizeAngle, 
   degreesToRadians, 
   radiansToDegrees 
-} from './julianDay.js';
+} from '../core/julianDay.js';
 
 /**
  * Calculate Midheaven (MC) - 10th house cusp

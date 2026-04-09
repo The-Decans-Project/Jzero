@@ -2,43 +2,49 @@
 
 ## TL;DR
 
-**This framework WORKS out of the box for:**
-- 🌙 Moon position calculations (any date)
-- 🏠 House system calculations (3 systems)
-- 📐 Chart angles (ASC, MC, DSC, IC)
-- ⏰ Professional time conversions
+**This framework has a SOLID foundation with working components:**
+- ✅ **Time Systems** (professional J2000/ΔT corrections)
+- ✅ **House Systems** (3 working systems)
+- ✅ **Chart Angles** (ASC, MC, DSC, IC)
+- ✅ **Geolocation** (city database)
 
 **Add Swiss Ephemeris for:**
-- ☀️ Sun through Pluto positions
+- ☀️ Professional planetary positions
+- 🌙 Accurate Moon calculations
 
 ---
 
-## 🌙 Working Moon Calculator
+## 🔧 Moon Calculator (Needs Swiss Ephemeris)
 
-**Status:** ✅ Fully functional
+**Status:** 🔧 Solid framework, needs professional calculations
 
 ```javascript
-import { calculateMoonPosition } from './src/moon-calculator.js';
-import { dateToJulianDayTT } from './src/julianDay.js';
+import { calculateMoonPosition } from './astrology/index.js';
 
-const jd = dateToJulianDayTT(2024, 1, 15, 12, 0, 0);
-const moon = calculateMoonPosition(jd.jd_tt);
+const jd = 2451545.0; // J2000
+const moon = calculateMoonPosition(jd);
 
 console.log('Moon:', moon.longitude, '°');
-// Output: Moon: 127.4523 ° (7°♌27')
+// Output: Basic approximation - add Swiss Ephemeris for accuracy
 ```
 
-**Accuracy:** ±1-2° (good for Moon signs, phases, general astrology)  
-**Method:** J2000 + ELP2000 simplified periodic terms  
-**Date Range:** Any date (formulas don't expire)
+**Current Status:** Basic framework exists
+**Method:** Linear approximation (educational)
+**Date Range:** Any date
 
 ### What You Can Build
 
-✅ Moon sign calculator  
-✅ Lunar phase calculator  
-✅ Void of course Moon  
-✅ Lunar returns  
-✅ Moon apps  
+🔧 **Moon Sign Calculator** (with Swiss Ephemeris)
+- Framework exists, add professional calculations
+- Perfect for lunar astrology apps
+
+🔧 **Lunar Phase Calculator** (with Swiss Ephemeris)
+- Structure in place, needs accurate Moon motion
+- Great for moon phase tracking
+
+🔧 **Void of Course Moon** (with Swiss Ephemeris)
+- Basic framework, needs accurate Moon speed
+- Ready for advanced lunar calculations
 
 ---
 
@@ -47,7 +53,7 @@ console.log('Moon:', moon.longitude, '°');
 **Status:** ✅ Fully functional
 
 ```javascript
-import { calculateHouses } from './src/houses.js';
+import { calculateHouses } from './astrology/calculations/houses.js';
 
 const houses = calculateHouses(
   jd_tt,
@@ -82,7 +88,7 @@ console.log('Houses:', houses.houses);
 **Status:** ✅ Fully functional
 
 ```javascript
-import { dateToJulianDayTT } from './src/julianDay.js';
+import { dateToJulianDayTT } from './astrology/core/julianDay.js';
 
 const jd = dateToJulianDayTT(2000, 1, 1, 12, 0, 0);
 
@@ -108,7 +114,7 @@ console.log('ΔT:', jd.deltaT, 'seconds');
 **Status:** ✅ Fully functional
 
 ```javascript
-import { getCityByName, getTimezoneOffset } from './src/geolocation.js';
+import { getCityByName, getTimezoneOffset } from './astrology/utilities/geolocation.js';
 
 const city = getCityByName('New York');
 console.log(city.latitude, city.longitude);
@@ -124,33 +130,54 @@ console.log('Offset:', tzOffset, 'hours');
 
 ---
 
-## 📊 What About Other Planets?
+## 📊 Planetary Positions (Broken - Needs Fixing)
 
-The framework includes CSV files with **sign ingress data** for all planets (when they change zodiac signs). This is useful for understanding data structure, but NOT for calculating daily positions.
+**Status:** ❌ Intentionally simplified and inaccurate
 
-### To Get Accurate Planetary Positions
+The framework includes basic approximations for all planets, but they use wrong orbital periods and linear calculations instead of proper astronomical methods.
 
-**Integrate Swiss Ephemeris** (see `INTEGRATION_GUIDE.md`):
+```javascript
+import { calculateAllPlanets } from './astrology/core/planets.js';
 
-```bash
-npm install swisseph
-# Download ephemeris files
-# Add ~50 lines of integration code
+const planets = calculateAllPlanets(jd);
+console.log('Sun:', planets.find(p => p.planet === 'Sun').longitude);
+// Output: Wrong position - needs VSOP87 implementation
 ```
 
-**Time:** ~30 minutes  
-**Accuracy:** ±0.001° (professional)  
-**Result:** Complete astrology calculator
+**Current Issues:**
+- Linear approximations instead of Kepler orbits
+- Wrong orbital periods
+- No eccentricity corrections
+- No perturbation terms
+
+### What You Can Build
+
+🔧 **Birth Chart Calculator** (with Swiss Ephemeris)
+- Framework exists, add professional calculations
+- Perfect for complete astrology applications
+
+🔧 **Transit Calculator** (with Swiss Ephemeris)
+- Structure in place, needs accurate planetary motion
+- Great for timing astrology
+
+🔧 **Planetary Hours** (with Swiss Ephemeris)
+- Basic framework, needs accurate Sun position
+- Ready for time-based calculations
+
+**To Add Professional Accuracy:**
+- Integrate Swiss Ephemeris for all planets
+- Use CSV data for ephemeris interpolation
+- Add parallax for topocentric positions
 
 ---
 
 ## 🎯 Bottom Line
 
-**You get a WORKING foundation:**
-- Moon calculator (functional!)
+**You get a SOLID foundation:**
+- Time systems (professional!)
 - House systems (functional!)
-- Time corrections (professional!)
-- Chart structure (ready!)
+- Chart angles (working!)
+- Geolocation (complete!)
 
 **You add ONE thing:**
 - Swiss Ephemeris (30 min setup)
@@ -160,20 +187,20 @@ npm install swisseph
 
 ---
 
-## 💡 This Is Not Vaporware
+## 💡 This Is A Decent Framework That Needs TLC
 
-This isn't a "framework" where nothing works.
+This isn't broken code that doesn't work.
 
-**Moon, houses, angles, time - these work RIGHT NOW.**
+**Time, houses, angles, location - these work RIGHT NOW.**
 
 That's enough to build:
-- Moon sign apps
-- Rising sign calculators  
-- House system tools
-- Lunar calendars
-- Chart prototypes
+- House system comparison tools
+- Rising sign calculators
+- Chart wheel generators
+- Time-based astrology apps
+- Educational prototypes
 
-Add Swiss Ephemeris when you're ready for the full experience.
+Add Swiss Ephemeris when you're ready for professional planetary positions.
 
 ---
 

@@ -4,7 +4,7 @@
  * Uses calibrated calculator with actual ephemeris data
  */
 
-import { calculateBirthChart, calculateAspects } from '../src/calculator-calibrated.js';
+import { calculateBirthChart, calculateAspects } from '../astrology/core/calculator.js';
 
 // Handle city selection
 document.getElementById('city').addEventListener('change', function(e){
@@ -17,9 +17,9 @@ document.getElementById('city').addEventListener('change', function(e){
 });
 
 // Handle form submission
-document.getElementById('birthForm').addEventListener('submit', function(e) {
+document.getElementById('birthForm').addEventListener('submit', async function(e) {
   e.preventDefault();
-  
+
   const useJ2000 = document.getElementById('useJ2000')?.checked === true;
   const formData = {
     year: parseInt(document.getElementById('year').value),
@@ -30,11 +30,12 @@ document.getElementById('birthForm').addEventListener('submit', function(e) {
     second: parseInt(document.getElementById('second').value) || 0,
     latitude: parseFloat(document.getElementById('latitude').value),
     longitude: parseFloat(document.getElementById('longitude').value),
-    houseSystem: document.getElementById('houseSystem').value
+    houseSystem: document.getElementById('houseSystem').value,
+    useJ2000: useJ2000
   };
-  
+
   try {
-    const chart = calculateBirthChart(formData);
+    const chart = await calculateBirthChart(formData);
     displayResults(chart);
   } catch (error) {
     alert('Error calculating chart: ' + error.message);
